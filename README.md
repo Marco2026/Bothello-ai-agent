@@ -1,1 +1,1 @@
-# fraco-othello-ai-agent
+# Botelo-ai-agent
