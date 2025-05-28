@@ -1,18 +1,29 @@
 import pygame as pg
-from othello.board import WIDTH, HEIGHT, ROWS, COLS, GREEN, BLACK, SQUARE_SIZE
+from othello.board import Board
+from othello.colors import BLACK
+from othello.game_config import WIDTH, HEIGHT
 
 # Constants for the game
 FPS = 60
 NAME = "Othello Game"
 SIZE = (WIDTH, HEIGHT)
+WHITE_PIECE = './othello/assets/white_piece.png'
+BLACK_PIECE = './othello/assets/black_piece.png'
 
 pg.init()
-screen = pg.display.set_mode(SIZE)
 pg.display.set_caption(NAME)
+screen = pg.display.set_mode(SIZE)
+white_piece = pg.image.load(WHITE_PIECE)
+white_piece.convert()
+white_rect = white_piece.get_rect()
+white_rect.center = 800 // 2, 800 // 2
+black_piece = pg.image.load(BLACK_PIECE)
+black_piece.convert()
 
 def main():
     running = True
-    clock = pg.time.Clock() 
+    clock = pg.time.Clock()
+    board = Board()
 
     while running:
         clock.tick(FPS)
@@ -20,16 +31,13 @@ def main():
             if event.type == pg.QUIT:
                 running = False
 
-        screen.fill(GREEN)
+        board.draw_board(screen)
         
-        for i in range(ROWS + 1):
-            pg.draw.line(screen, BLACK, (0, i * SQUARE_SIZE), (WIDTH, i * SQUARE_SIZE), 2)
-        
-        for j in range (COLS + 1):
-            pg.draw.line(screen, BLACK, (j * SQUARE_SIZE, 0), (j * SQUARE_SIZE, HEIGHT), 2)
+
+        screen.blit(white_piece, white_rect)
+        pg.draw.rect(screen, BLACK, white_rect, 1)
 
         pg.display.flip()
-
 
 
     pg.quit()
