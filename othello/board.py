@@ -10,6 +10,7 @@ SQUARE_SIZE = WIDTH // COLS
 # Colors used in the game in rgb format
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+GREEN = (20,134,58)
 
 class Board:
     def __init__(self):
