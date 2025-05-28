@@ -1,1 +1,1 @@
-# fraco-othello-ai-agent
+# Bothello-ai-agent
