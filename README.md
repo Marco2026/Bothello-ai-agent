@@ -1,1 +1,1 @@
-# Botelo-ai-agent
+# Bothello-ai-agent
