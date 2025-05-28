@@ -9,3 +9,5 @@
 *.bbl
 *.blg
 out/
+__pycache__/
+*.pyc
