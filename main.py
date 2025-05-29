@@ -1,6 +1,5 @@
 import pygame as pg
 from othello.board import Board
-from othello.colors import BLACK
 from othello.game_config import WIDTH, HEIGHT
 
 # Constants for the game
