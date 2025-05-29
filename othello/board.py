@@ -25,8 +25,9 @@ class Board:
         self.board[ROWS // 2][COLS // 2] = Piece(ROWS // 2, COLS // 2, WHITE) # Casilla (5, 5)
 
     def put_piece(self, row, col):
-        self.board[row][col] = Piece(row, col, BLACK)
-        self.turn += 1
+        if self.board[row][col] == None:
+            self.board[row][col] = Piece(row, col, BLACK)
+            self.turn += 1
 
     def draw_board(self, screen):
         screen.fill(GREEN)
