@@ -82,8 +82,4 @@ class Board:
         self.draw_board(screen)
         self.draw_pieces(screen)
         self.draw_movements(screen, current_player=self.current_player, possible_movements=self.possible_placements)
-
-    def place_piece(self, position):
-        self.board[position[0]][position[1]] = self.selected_piece
-        self.selected_piece = None
         
