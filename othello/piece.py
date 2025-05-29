@@ -31,7 +31,7 @@ class Piece:
             piece = scale_piece(BLACK_PIECE)
         
         piece_rect = piece.get_rect()
-        piece_rect.center = self.row * SQUARE_SIZE + SQUARE_SIZE // 2, self.col * SQUARE_SIZE + SQUARE_SIZE // 2 
+        piece_rect.center = self.col * SQUARE_SIZE + SQUARE_SIZE // 2, self.row * SQUARE_SIZE + SQUARE_SIZE // 2 
 
         screen.blit(piece, piece_rect)
 

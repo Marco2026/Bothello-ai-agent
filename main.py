@@ -13,8 +13,8 @@ screen = pg.display.set_mode(SIZE)
 
 def get_row_col_from_mouse(pos):
     x, y = pos
-    row = x // SQUARE_SIZE
-    col = y // SQUARE_SIZE
+    row = y // SQUARE_SIZE
+    col = x // SQUARE_SIZE
     return row, col
 
 def main():
