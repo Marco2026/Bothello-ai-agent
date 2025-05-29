@@ -24,6 +24,11 @@ class Board:
         self.board[ROWS // 2][COLS // 2 - 1] = Piece(ROWS // 2, COLS // 2 - 1, BLACK) # Casilla (5, 4)
         self.board[ROWS // 2][COLS // 2] = Piece(ROWS // 2, COLS // 2, WHITE) # Casilla (5, 5)
 
+    def put_piece(self, row, col):
+        if self.board[row][col] == None:
+            self.board[row][col] = Piece(row, col, BLACK)
+            self.turn += 1
+
     def draw_board(self, screen):
         screen.fill(GREEN)
         for row in range(ROWS + 1):
@@ -41,7 +46,6 @@ class Board:
     def draw_screen(self, screen):
         self.draw_board(screen)
         self.draw_pieces(screen)
-        
 
     def place_piece(self, position):
         self.board[position[0]][position[1]] = self.selected_piece
