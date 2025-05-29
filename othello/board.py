@@ -31,6 +31,7 @@ class Board:
             self.board[row][col] = Piece(row, col, color=self.current_player)
             self.change_current_player()
             self.turn += 1
+            self.update_neighbors(self.board[row][col])
 
     def change_current_player(self): # Mejorar cuando tengamos la lista de posibles movimientos
         if self.current_player == WHITE:
@@ -70,6 +71,26 @@ class Board:
             pos = (col * SQUARE_SIZE + 2, row * SQUARE_SIZE + 2)
             screen.blit(highlight, pos)
 
+    def update_neighbors(self, last_piece=None):
+        if last_piece is None:
+            return
+        res = set(self.possible_placements)
+        directions = [(-1, -1), (0, -1), (1, -1),
+                      (-1, 0),          (1,0),
+                      (-1, 1),  (0, 1),  (1, 1)]
+
+        row, col = last_piece.row, last_piece.col
+
+        for dx, dy in directions:
+            new_row, new_col = row + dy, col + dx
+            if 0 <= new_row < ROWS and 0 <= new_col < COLS:
+                if self.board[new_row][new_col] is None:
+                    res.add((new_row, new_col))
+
+        if (row, col) in res:
+            res.remove((row, col))
+
+        self.possible_placements = list(res)
 
     def draw_pieces(self, screen):
         for row in range(ROWS):
