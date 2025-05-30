@@ -28,10 +28,16 @@ class Board:
 
     def put_piece(self, row, col):
         if self.board[row][col] == None and (row,col) in self.possible_placements:
-            self.board[row][col] = Piece(row, col, color=self.current_player)
-            self.change_current_player()
+            piece = Piece(row, col, color=self.current_player)
+            self.board[row][col] = piece
+            if self.current_player == WHITE:
+                self.white_pieces += 1
+            elif self.current_player == BLACK:
+                self.black_pieces += 1
+            self.capture_pieces(piece)
             self.turn += 1
-            self.update_neighbors(self.board[row][col])
+            self.update_neighbors(piece)
+            self.change_current_player()
 
     def change_current_player(self): # Mejorar cuando tengamos la lista de posibles movimientos
         if self.current_player == WHITE:
@@ -62,8 +68,63 @@ class Board:
 
         self.possible_placements = list(res)
 
-    
+    def capture_pieces(self, last_piece):
+        pieces_to_capture = (self.get_pieces_direction(last_piece, 'right') +
+                            self.get_pieces_direction(last_piece, 'left') +
+                            self.get_pieces_direction(last_piece, 'up') +
+                            self.get_pieces_direction(last_piece, 'down'))
+        self.change_pieces_color(pieces_to_capture)
 
+    
+    def get_pieces_direction(self, last_piece, direction):
+        if direction not in ['right', 'left', 'up', 'down']:
+            return
+        row, col = last_piece.row, last_piece.col
+        if direction == 'right':
+            search_range = range(col + 1, COLS)
+        elif direction == 'left':
+            search_range = range(col - 1, -1, -1)
+        elif direction == 'up':
+            search_range = range(row - 1, -1, -1)
+        elif direction == 'down':
+            search_range = range(row + 1, ROWS)
+        next_pieces = []
+
+        for i in search_range:
+            if direction in ['right', 'left']:
+                if self.board[row][i] is None:
+                    next_pieces = []
+                    break
+                else:
+                    next_pieces.append(self.board[row][i])
+                    if self.board[row][i].color == last_piece.color:
+                        break
+            else:
+                if self.board[i][col] is None:
+                    next_pieces = []
+                    break
+                else:
+                    next_pieces.append(self.board[i][col])
+                    if self.board[i][col].color == last_piece.color:
+                        break    
+        return next_pieces
+
+    def change_pieces_color (self, placed_pieces):
+        if not placed_pieces:
+            return
+        if placed_pieces[-1].color == self.current_player:
+            for piece in placed_pieces:
+                row, col = piece.row, piece.col
+                self.board[row][col] = Piece(row, col, color=self.current_player)
+            
+            if self.current_player == WHITE:
+                self.white_pieces += len(placed_pieces)
+                self.black_pieces -= len(placed_pieces)
+            else:
+                self.black_pieces += len(placed_pieces) 
+                self.white_pieces -= len(placed_pieces)
+
+            
     def draw_screen(self, screen):
         self.draw_board(screen)
         self.draw_pieces(screen)
@@ -85,6 +146,7 @@ class Board:
 
     def draw_movements(self, screen, current_player=None, possible_movements=None):
         if not possible_movements:
+            screen.fill(WOODEN)
             return
 
         show_flash = (pg.time.get_ticks() // 500) % 2 == 0
