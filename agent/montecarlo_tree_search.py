@@ -9,13 +9,13 @@ class Node:
         self.visits = 0
 
     def calculate_average_value(self):
-        res = None
+        res = 1000000
         if self.visits != 0:
             res = self.score / self.visits
         return res
     
     def calculate_upper_confidence_bound(self, state):
-        return state.calculate_average_value() + CONSTANT_C * math.sqrt(math.log(self.visits) / state.visits)
+        return state.calculate_average_value() + 2 * CONSTANT_C * math.sqrt(2 * math.log(self.visits) / state.visits)
 
 def montecarlo_tree_search(state):
     tree = Node(state)
