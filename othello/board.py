@@ -1,6 +1,6 @@
 import pygame as pg
-from .game_config import WIDTH, HEIGHT, ROWS, COLS, SQUARE_SIZE
-from .colors import BLACK, WHITE, GREEN_BASE, GREEN, WOODEN
+from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE
+from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
 
 DIRECTIONS = {
@@ -46,8 +46,9 @@ class Board:
             piece = Piece(row, col, color=self.current_player)
             self.board[row][col] = piece
             self.last_piece = piece
-            self.capture_pieces(piece) 
+            self.capture_pieces() 
             self.change_current_player()
+            self.update_number_of_pieces()
             self.turn += 1
 
     def change_current_player(self):
@@ -83,10 +84,10 @@ class Board:
         return res
 
 
-    def capture_pieces(self, last_piece):
+    def capture_pieces(self):
         pieces_to_capture = []
         for direction in DIRECTIONS.keys():
-            pieces_to_capture += self.get_pieces_direction(last_piece, direction)
+            pieces_to_capture += self.get_pieces_direction(self.last_piece, direction)
         self.change_pieces_color(pieces_to_capture)
 
 
@@ -121,12 +122,25 @@ class Board:
                 piece.change_color(self.current_player)
             
             if self.current_player == WHITE:
-                self.white_pieces += len(placed_pieces)
-                self.black_pieces = self.black_pieces - len(placed_pieces) + 1
+                self.white_pieces += len(placed_pieces) - 1
+                self.black_pieces = self.black_pieces - len(placed_pieces) + 2
             else:
-                self.black_pieces += len(placed_pieces) 
-                self.white_pieces = self.white_pieces - len(placed_pieces) + 1
+                self.black_pieces += len(placed_pieces) - 1
+                self.white_pieces = self.white_pieces - len(placed_pieces) + 2
 
+    def update_number_of_pieces(self):
+        black_number = 0
+        white_number = 0
+        for row in range(ROWS):
+            for col in range(COLS):
+                piece = self.board[row][col]
+                if piece is not None:
+                    if piece.color is WHITE:
+                        white_number += 1
+                    else:
+                        black_number += 1
+        self.white_pieces = white_number
+        self.black_pieces = black_number
             
     def draw_screen(self, screen):
         self.draw_board(screen)
@@ -137,9 +151,9 @@ class Board:
     def draw_board(self, screen):
         screen.fill(GREEN)
         for row in range(ROWS + 1):
-            pg.draw.line(screen, BLACK, (0, row * SQUARE_SIZE), (WIDTH, row * SQUARE_SIZE), 2)
+            pg.draw.line(screen, BLACK, (0, row * SQUARE_SIZE), (BOARD_WIDTH, row * SQUARE_SIZE), 2)
         for col in range (COLS + 1):
-            pg.draw.line(screen, BLACK, (col * SQUARE_SIZE, 0), (col * SQUARE_SIZE, HEIGHT), 2)
+            pg.draw.line(screen, BLACK, (col * SQUARE_SIZE, 0), (col * SQUARE_SIZE, BOARD_HEIGHT), 2)
 
     def draw_pieces(self, screen):
         for row in range(ROWS):
@@ -151,9 +165,9 @@ class Board:
     def draw_movements(self, screen, current_player=None, possible_movements=None):
         if self.current_player is None:
             for row in range(ROWS + 1):
-                pg.draw.line(screen, WHITE, (0, row * SQUARE_SIZE), (WIDTH, row * SQUARE_SIZE), 2)
+                pg.draw.line(screen, WHITE, (0, row * SQUARE_SIZE), (BOARD_WIDTH, row * SQUARE_SIZE), 2)
             for col in range (COLS + 1):
-                pg.draw.line(screen, WHITE, (col * SQUARE_SIZE, 0), (col * SQUARE_SIZE, HEIGHT), 2) 
+                pg.draw.line(screen, WHITE, (col * SQUARE_SIZE, 0), (col * SQUARE_SIZE, BOARD_HEIGHT), 2) 
             return
 
         show_flash = (pg.time.get_ticks() // 500) % 2 == 0
