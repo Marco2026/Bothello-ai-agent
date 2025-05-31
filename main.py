@@ -61,6 +61,8 @@ def put_human_piece(board):
     board.put_piece(row, col)
 
 def put_agent_piece(agent, board):
+    if not board.possible_movements:
+        return
     time.sleep(0.4)
     agent.make_decision(board)
     row, col = agent.action
