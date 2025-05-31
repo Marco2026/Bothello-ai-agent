@@ -23,7 +23,7 @@ class Board:
         self.last_piece = None 
         self.white_pieces = 2
         self.black_pieces = 2
-        self.current_player = WHITE
+        self.current_player = BLACK
         self.build_initial_board()
          
 
