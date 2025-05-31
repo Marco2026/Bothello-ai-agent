@@ -1,5 +1,5 @@
 import pygame as pg
-from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE
+from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, PLAY_VS_AGENT
 from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
 
@@ -25,7 +25,6 @@ class Board:
         self.black_pieces = 2
         self.current_player = BLACK
         self.build_initial_board()
-         
 
     def build_initial_board(self):
         for row in range(ROWS + 1):
@@ -40,7 +39,6 @@ class Board:
 
         self.get_possible_movements()
 
-    
     def put_piece(self, row, col):
         if self.board[row][col] == None and (row,col) in self.possible_movements:
             piece = Piece(row, col, color=self.current_player)
