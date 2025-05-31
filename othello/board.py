@@ -13,7 +13,6 @@ class Board:
         self.black_pieces = 2
         self.current_player = WHITE
         self.build_initial_board()
-        
          
 
     def build_initial_board(self):
@@ -35,16 +34,22 @@ class Board:
             piece = Piece(row, col, color=self.current_player)
             self.board[row][col] = piece
             self.last_piece = piece
-            self.capture_pieces(piece) # Aquí se suma la pieza que pones y se ajustan las capturadas.
+            self.capture_pieces(piece) # Aquí se suma al contador de piezas la pieza que pones y se ajustan las capturadas.
             self.change_current_player()
             self.turn += 1
 
-    def change_current_player(self): # Mejorar cuando tengamos la lista de posibles movimientos
-        if self.current_player == WHITE:
-            self.current_player = BLACK
-        else:
-            self.current_player = WHITE
+    def change_current_player(self):
+        if self.current_player == WHITE: self.current_player = BLACK 
+        else: self.current_player = WHITE 
+        self.get_possible_movements()
 
+        if len(self.possible_movements) == 0:
+            if self.current_player == WHITE: self.current_player = BLACK 
+            else: self.current_player = WHITE 
+            self.get_possible_movements()
+
+            if not self.possible_movements:
+                self.current_player = None
 
     def get_possible_movements(self):
         res = set()
