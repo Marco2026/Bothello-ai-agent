@@ -18,11 +18,8 @@ class Piece:
         self.x = SQUARE_SIZE * self.col + SQUARE_SIZE // 2
         self.y = SQUARE_SIZE * self.row + SQUARE_SIZE // 2
 
-    def change_color(self):
-        if self.color == WHITE:
-            self.color = BLACK
-        else:
-            self.color = WHITE
+    def change_color(self, color):
+        self.color = color
     
     def draw_piece(self, screen):
         if self.color == WHITE:

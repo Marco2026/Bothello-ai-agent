@@ -1,12 +1,24 @@
 import pygame as pg
-from .game_config import WIDTH, HEIGHT, ROWS, COLS, SQUARE_SIZE, DIRECTIONS
+from .game_config import WIDTH, HEIGHT, ROWS, COLS, SQUARE_SIZE
 from .colors import BLACK, WHITE, GREEN_BASE, GREEN, WOODEN
 from .piece import Piece
+
+DIRECTIONS = {
+    'right': (1, 0),
+    'left': (-1, 0),
+    'up': (0, 1),
+    'down': (0, -1),
+    'up_right': (1, 1),
+    'up_left': (-1, 1),
+    'down_right': (1, -1),
+    'down_left': (-1, -1)
+}
 
 class Board:
 
     def __init__(self):
         self.board = []
+        self.possible_movements = []
         self.turn = 0
         self.last_piece = None 
         self.white_pieces = 2
@@ -21,10 +33,10 @@ class Board:
             for col in range(COLS):
                 self.board[row].append(None)
 
-        self.board[ROWS // 2 - 1][COLS // 2 - 1] = Piece(ROWS // 2 - 1, COLS // 2 - 1, WHITE) # Casilla (4, 4)
-        self.board[ROWS // 2 - 1][COLS // 2] = Piece(ROWS // 2 - 1, COLS // 2, BLACK) # Casilla (4, 5)
-        self.board[ROWS // 2][COLS // 2 - 1] = Piece(ROWS // 2, COLS // 2 - 1, BLACK) # Casilla (5, 4)
-        self.board[ROWS // 2][COLS // 2] = Piece(ROWS // 2, COLS // 2, WHITE) # Casilla (5, 5)
+        self.board[ROWS // 2 - 1][COLS // 2 - 1] = Piece(ROWS // 2 - 1, COLS // 2 - 1, WHITE) 
+        self.board[ROWS // 2 - 1][COLS // 2] = Piece(ROWS // 2 - 1, COLS // 2, BLACK) 
+        self.board[ROWS // 2][COLS // 2 - 1] = Piece(ROWS // 2, COLS // 2 - 1, BLACK) 
+        self.board[ROWS // 2][COLS // 2] = Piece(ROWS // 2, COLS // 2, WHITE) 
 
         self.get_possible_movements()
 
@@ -34,7 +46,7 @@ class Board:
             piece = Piece(row, col, color=self.current_player)
             self.board[row][col] = piece
             self.last_piece = piece
-            self.capture_pieces(piece) # Aquí se suma al contador de piezas la pieza que pones y se ajustan las capturadas.
+            self.capture_pieces(piece) 
             self.change_current_player()
             self.turn += 1
 
@@ -106,8 +118,7 @@ class Board:
             return
         if placed_pieces[-1].color == self.current_player:
             for piece in placed_pieces:
-                row, col = piece.row, piece.col
-                self.board[row][col] = Piece(row, col, color=self.current_player)
+                piece.change_color(self.current_player)
             
             if self.current_player == WHITE:
                 self.white_pieces += len(placed_pieces)
