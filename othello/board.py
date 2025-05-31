@@ -1,9 +1,10 @@
 import pygame as pg
-from .game_config import WIDTH, HEIGHT, ROWS, COLS, SQUARE_SIZE
+from .game_config import WIDTH, HEIGHT, ROWS, COLS, SQUARE_SIZE, DIRECTIONS
 from .colors import BLACK, WHITE, GREEN_BASE, GREEN, WOODEN
 from .piece import Piece
 
 class Board:
+
     def __init__(self):
         self.board = []
         self.turn = 0
@@ -31,11 +32,7 @@ class Board:
             piece = Piece(row, col, color=self.current_player)
             self.board[row][col] = piece
             self.last_piece = piece
-            if self.current_player == WHITE:
-                self.white_pieces += 1
-            elif self.current_player == BLACK:
-                self.black_pieces += 1
-            self.capture_pieces(piece)
+            self.capture_pieces(piece) # Aquí se suma la pieza que pones y se ajustan las capturadas.
             self.change_current_player()
             self.update_possible_movements()
             self.turn += 1
@@ -55,19 +52,11 @@ class Board:
                     res.add((row, col))
 
         self.possible_movements = list(res)
-        if self.current_player == WHITE:
-            self.possible_white_movements = list(res)
-            self.possible_black_movements = []
-        elif self.current_player == BLACK:
-            self.possible_black_movements = list(res)
-            self.possible_white_movements = []
         
-
     def valid_movement(self, row, col):
         future_piece = Piece(row, col, self.current_player)
-        directions = ['right', 'left', 'up', 'down']
         res = False
-        for direction in directions:
+        for direction in DIRECTIONS.keys():
             pieces_to_capture = self.get_pieces_direction(future_piece, direction)
             if len(pieces_to_capture) > 1 and pieces_to_capture[-1].color == self.current_player:
                 res = True
@@ -76,45 +65,34 @@ class Board:
 
 
     def capture_pieces(self, last_piece):
-        pieces_to_capture = (self.get_pieces_direction(last_piece, 'right') +
-                            self.get_pieces_direction(last_piece, 'left') +
-                            self.get_pieces_direction(last_piece, 'up') +
-                            self.get_pieces_direction(last_piece, 'down'))
+        pieces_to_capture = []
+        for direction in DIRECTIONS.keys():
+            pieces_to_capture += self.get_pieces_direction(last_piece, direction)
         self.change_pieces_color(pieces_to_capture)
 
-    
-    def get_pieces_direction(self, last_piece, direction):
-        if direction not in ['right', 'left', 'up', 'down']:
-            return
-        row, col = last_piece.row, last_piece.col
-        if direction == 'right':
-            search_range = range(col + 1, COLS)
-        elif direction == 'left':
-            search_range = range(col - 1, -1, -1)
-        elif direction == 'up':
-            search_range = range(row - 1, -1, -1)
-        elif direction == 'down':
-            search_range = range(row + 1, ROWS)
-        next_pieces = []
 
-        for i in search_range:
-            if direction in ['right', 'left']:
-                if self.board[row][i] is None:
-                    next_pieces = []
-                    break
-                else:
-                    next_pieces.append(self.board[row][i])
-                    if self.board[row][i].color == last_piece.color:
-                        break
-            else:
-                if self.board[i][col] is None:
-                    next_pieces = []
-                    break
-                else:
-                    next_pieces.append(self.board[i][col])
-                    if self.board[i][col].color == last_piece.color:
-                        break    
-        return next_pieces
+    def get_pieces_direction(self, last_piece, direction):
+        res = []
+        if direction not in DIRECTIONS:
+            return res
+
+        dx, dy = DIRECTIONS[direction]
+        row, col = last_piece.row, last_piece.col
+        
+        while True:
+            row += dy
+            col += dx
+            if not (0 <= row < ROWS and 0 <= col < COLS):
+                res = []
+                break
+            piece = self.board[row][col]
+            if piece is None:
+                res = []
+                break
+            res.append(piece)
+            if piece.color == last_piece.color:
+                break
+        return res
 
     def change_pieces_color (self, placed_pieces):
         if not placed_pieces:
@@ -126,10 +104,10 @@ class Board:
             
             if self.current_player == WHITE:
                 self.white_pieces += len(placed_pieces)
-                self.black_pieces -= len(placed_pieces)
+                self.black_pieces = self.black_pieces - len(placed_pieces) + 1
             else:
                 self.black_pieces += len(placed_pieces) 
-                self.white_pieces -= len(placed_pieces)
+                self.white_pieces = self.white_pieces - len(placed_pieces) + 1
 
             
     def draw_screen(self, screen):
