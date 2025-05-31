@@ -1,5 +1,5 @@
 import pygame as pg
-from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, PLAY_VS_AGENT
+from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE
 from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
 
