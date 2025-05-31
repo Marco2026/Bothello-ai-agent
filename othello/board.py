@@ -11,9 +11,9 @@ class Board:
         self.last_piece = None 
         self.white_pieces = 2
         self.black_pieces = 2
-        self.build_initial_board()
         self.current_player = WHITE
-        self.possible_movements = [(2,4),(3,5),(4,2),(5,3)]
+        self.build_initial_board()
+        
          
 
     def build_initial_board(self):
@@ -27,6 +27,9 @@ class Board:
         self.board[ROWS // 2][COLS // 2 - 1] = Piece(ROWS // 2, COLS // 2 - 1, BLACK) # Casilla (5, 4)
         self.board[ROWS // 2][COLS // 2] = Piece(ROWS // 2, COLS // 2, WHITE) # Casilla (5, 5)
 
+        self.get_possible_movements()
+
+    
     def put_piece(self, row, col):
         if self.board[row][col] == None and (row,col) in self.possible_movements:
             piece = Piece(row, col, color=self.current_player)
@@ -34,17 +37,16 @@ class Board:
             self.last_piece = piece
             self.capture_pieces(piece) # Aquí se suma la pieza que pones y se ajustan las capturadas.
             self.change_current_player()
-            self.update_possible_movements()
             self.turn += 1
 
     def change_current_player(self): # Mejorar cuando tengamos la lista de posibles movimientos
-        
         if self.current_player == WHITE:
             self.current_player = BLACK
         else:
             self.current_player = WHITE
 
-    def update_possible_movements(self):
+
+    def get_possible_movements(self):
         res = set()
         for row in range(ROWS):
             for col in range(COLS):
@@ -131,7 +133,7 @@ class Board:
                     piece.draw_piece(screen)
 
     def draw_movements(self, screen, current_player=None, possible_movements=None):
-        if not possible_movements:
+        if self.current_player is None:
             for row in range(ROWS + 1):
                 pg.draw.line(screen, WHITE, (0, row * SQUARE_SIZE), (WIDTH, row * SQUARE_SIZE), 2)
             for col in range (COLS + 1):
