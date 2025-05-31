@@ -1,3 +1,12 @@
+from enum import Enum
+
+class GameMode(Enum):
+    HUMAN_VS_HUMAN = 0
+    HUMAN_VS_AGENT = 1
+    AGENT_VS_AGENT = 2
+
+MODE = GameMode(2)
+
 BOARD_WIDTH = 700
 BOARD_HEIGHT = 700
 SCREEN_WIDTH = BOARD_WIDTH
@@ -5,4 +14,5 @@ SCREEN_HEIGHT = BOARD_HEIGHT + 100
 ROWS = 8
 COLS = 8
 SQUARE_SIZE = BOARD_WIDTH // COLS
-PLAY_VS_AGENT = True
+
+

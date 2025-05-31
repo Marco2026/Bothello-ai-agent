@@ -1,5 +1,5 @@
 import pygame as pg
-from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, PLAY_VS_AGENT
+from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE
 from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
 
@@ -119,12 +119,6 @@ class Board:
             for piece in placed_pieces:
                 piece.change_color(self.current_player)
             
-            if self.current_player == WHITE:
-                self.white_pieces += len(placed_pieces) - 1
-                self.black_pieces = self.black_pieces - len(placed_pieces) + 2
-            else:
-                self.black_pieces += len(placed_pieces) - 1
-                self.white_pieces = self.white_pieces - len(placed_pieces) + 2
 
     def update_number_of_pieces(self):
         black_number = 0
