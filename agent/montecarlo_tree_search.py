@@ -6,15 +6,16 @@ import random
 class Node:
     def __init__(self, state):
         self.children = []
-        self.score = 0
+        self.reward = 0
         self.visits = 0
         self.isExpanded = False
         self.state = state
+        self.action_selected = None
 
     def calculate_average_value(self):
         res = 1000000
         if self.visits != 0:
-            res = self.score / self.visits
+            res = self.reward / self.visits
         return res
 
 def uct_search(state):
@@ -22,10 +23,10 @@ def uct_search(state):
     time_elapsed, time_limit = generate_time_countdown(TIME_TO_SEARCH)
     while is_time_remaining(time_elapsed, time_limit):
         leaf = tree_policy(root)
-        score = default_policy(leaf.state)
-        backup(leaf, score)
+        reward = default_policy(leaf.state)
+        backup(leaf, reward)
         time_elapsed = time.time()
-    return action(best_child(root, 0))
+    return best_child(root, 0).action_selected
 
 def tree_policy(node):
     while node.isTerminal == False:
@@ -47,12 +48,12 @@ def default_policy(state):
     while state.isTerminal == False:
         action = random.choice(state.actions)
         state = next_state(state, action)
-    return state.score
+    return state.reward
 
-def backup(node, score):
+def backup(node, reward):
     while node != None:
         node.visits += 1
-        node.score += score
+        node.reward += reward
 
 def next_state(state, action):
     # Devolver el estado resultante de aplicar una accion al estado actual (conexion con el juego)
