@@ -59,7 +59,7 @@ def main():
                 if current_time - last_move_time > AGENT_MOVE_TIME:
                     last_move_time = current_time
                     put_agent_piece(agent, board)
-        elif MODE == GameMode(2):
+        elif MODE == GameMode.AGENT_VS_AGENT:
             if current_time - last_move_time > AGENT_MOVE_TIME:
                 last_move_time = current_time
                 put_agent_piece(agent, board)
