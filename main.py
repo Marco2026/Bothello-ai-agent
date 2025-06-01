@@ -1,9 +1,8 @@
 import pygame as pg
 from othello.board import Board
-from othello.game_config import SCREEN_WIDTH, SCREEN_HEIGHT, SQUARE_SIZE, BOARD_HEIGHT, BOARD_WIDTH, MODE, GameMode
+from othello.game_config import SCREEN_WIDTH, SCREEN_HEIGHT, SQUARE_SIZE, BOARD_HEIGHT, BOARD_WIDTH, MODE, GameMode, AGENT_MOVE_TIME
 from othello.colors import BLACK
 from agent.agent import Agent
-import time
 
 pg.init()
 pg.font.init()
@@ -16,12 +15,15 @@ FONT = pg.font.Font("othello/assets/bahnschrift.ttf", 30)
 pg.display.set_caption(NAME)
 screen = pg.display.set_mode(SIZE)
 
+
 def main():
     board = Board()
     board.build_initial_board()
 
     running = True
     clock = pg.time.Clock()
+
+    last_move_time = pg.time.get_ticks()
     
     if MODE != GameMode.HUMAN_VS_HUMAN: 
         agent= Agent()
@@ -42,6 +44,7 @@ def main():
         screen.blit(current_player_information, (10, BOARD_HEIGHT + 40))
         screen.blit(black_pieces_information, (BOARD_WIDTH - 250, BOARD_HEIGHT + 10))
         screen.blit(white_pieces_information, (BOARD_WIDTH - 250, BOARD_HEIGHT + 40))
+        current_time = pg.time.get_ticks()
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -50,11 +53,16 @@ def main():
         if MODE == GameMode.HUMAN_VS_AGENT:
             if board.current_player is BLACK:
                 if event.type == pg.MOUSEBUTTONDOWN:
+                    last_move_time = current_time
                     put_human_piece(board)
             else:
-                put_agent_piece(agent, board)
+                if current_time - last_move_time > AGENT_MOVE_TIME:
+                    last_move_time = current_time
+                    put_agent_piece(agent, board)
         elif MODE == GameMode(2):
-            put_agent_piece(agent, board)
+            if current_time - last_move_time > AGENT_MOVE_TIME:
+                last_move_time = current_time
+                put_agent_piece(agent, board)
         else:
             if event.type == pg.MOUSEBUTTONDOWN:
                 put_human_piece(board)
@@ -72,9 +80,6 @@ def put_human_piece(board):
 def put_agent_piece(agent, board):
     if not board.possible_movements:
         return
-    if MODE == GameMode.AGENT_VS_AGENT:
-        time.sleep(0.2)
-    time.sleep(0.4)
     agent.make_decision(board)
     row, col = agent.action
     board.put_piece(row, col)
