@@ -1,7 +1,8 @@
 import pygame as pg
-from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE
+from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, GENERATE_SAMPLE_DATA
 from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
+from .sample_data_generator import sample_data_generator
 
 DIRECTIONS = {
     'right': (1, 0),
@@ -48,6 +49,8 @@ class Board:
             self.change_current_player()
             self.update_number_of_pieces()
             self.turn += 1
+            if GENERATE_SAMPLE_DATA:
+                sample_data_generator(self)
 
     def change_current_player(self):
         if self.current_player == WHITE: self.current_player = BLACK 
