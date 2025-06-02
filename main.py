@@ -13,6 +13,7 @@ SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 FONT = pg.font.Font("othello/assets/bahnschrift.ttf", 30)
 
 pg.display.set_caption(NAME)
+pg.display.set_icon(pg.image.load("othello/assets/white_piece.png"))
 screen = pg.display.set_mode(SIZE)
 
 
