@@ -1,5 +1,5 @@
 import pygame as pg
-from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, GENERATE_SAMPLE_DATA
+from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, GENERATE_TRAINING_DATA
 from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
 from .training_data_generator import training_data_generator, training_data_initializer
@@ -26,7 +26,7 @@ class Board:
         self.black_pieces = 2
         self.current_player = BLACK
         self.build_initial_board()
-        if GENERATE_SAMPLE_DATA:
+        if GENERATE_TRAINING_DATA:
             training_data_initializer()
 
     def build_initial_board(self):
@@ -51,7 +51,7 @@ class Board:
             self.change_current_player()
             self.update_number_of_pieces()
             self.turn += 1
-            if GENERATE_SAMPLE_DATA:
+            if GENERATE_TRAINING_DATA:
                 training_data_generator(self)
 
     def change_current_player(self):
