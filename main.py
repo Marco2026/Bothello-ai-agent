@@ -75,10 +75,10 @@ def options_menu():
         screen.blit(pg.image.load("othello/assets/text_menu_rect.png"), (gc.SCREEN_WIDTH // 12, 75))
 
         MOUSE_POS = pg.mouse.get_pos()
-        MODE_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
-                             text_input=f"CHANGE MODE: {gc.MODE}", font=FONT, base_color=BLACK, hovering_color=WHITE)
-        TRAINING_DATA_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 100),
-                             text_input=f"CHANGE MODE: {gc.GENERATE_TRAINING_DATA}", font=FONT, base_color=BLACK, hovering_color=WHITE)
+        MODE_BUTTON = Button(image=pg.image.load("othello/assets/text_menu_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
+                             text_input=f"CHANGE MODE: {parse_mode(gc.MODE)}", font=FONT, base_color=BLACK, hovering_color=WHITE)
+        TRAINING_DATA_BUTTON = Button(image=pg.image.load("othello/assets/text_menu_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 100),
+                             text_input=f"GENERATE TRAINING DATA: {gc.GENERATE_TRAINING_DATA}", font=FONT, base_color=BLACK, hovering_color=WHITE)
         MENU_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
                              text_input="MENU", font=FONT, base_color=BLACK, hovering_color=WHITE)
         
@@ -196,5 +196,17 @@ def change_mode():
 
 def change_generate_training_data():
     gc.GENERATE_TRAINING_DATA = not gc.GENERATE_TRAINING_DATA
+
+def parse_mode(mode):
+    res = "Unknown"
+    match mode:
+        case gc.MODE.HUMAN_VS_HUMAN:
+            res = "Human vs Human"
+        case gc.MODE.HUMAN_VS_AGENT:
+            res = "Human vs Agent"
+        case gc.MODE.AGENT_VS_AGENT:
+            res = "Agent vs Agent"
+    return res
+
 
 main_menu()
