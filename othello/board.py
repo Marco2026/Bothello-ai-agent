@@ -2,7 +2,7 @@ import pygame as pg
 from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, GENERATE_SAMPLE_DATA
 from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
-from .sample_data_generator import sample_data_generator
+from .training_data_generator import training_data_generator, training_data_initializer
 
 DIRECTIONS = {
     'right': (1, 0),
@@ -26,6 +26,8 @@ class Board:
         self.black_pieces = 2
         self.current_player = BLACK
         self.build_initial_board()
+        if GENERATE_SAMPLE_DATA:
+            training_data_initializer()
 
     def build_initial_board(self):
         for row in range(ROWS + 1):
@@ -50,7 +52,7 @@ class Board:
             self.update_number_of_pieces()
             self.turn += 1
             if GENERATE_SAMPLE_DATA:
-                sample_data_generator(self)
+                training_data_generator(self)
 
     def change_current_player(self):
         if self.current_player == WHITE: self.current_player = BLACK 
