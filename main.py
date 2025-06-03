@@ -134,11 +134,12 @@ def play_game():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-            if gc.MODE == gc.MODE.HUMAN_VS_AGENT and board.current_player is BLACK:
-                last_move_time = current_time
-                put_human_piece(board)
-            elif gc.MODE == gc.MODE.HUMAN_VS_HUMAN:
-                put_human_piece(board)
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if gc.MODE == gc.MODE.HUMAN_VS_AGENT and board.current_player is BLACK:
+                    last_move_time = current_time
+                    put_human_piece(board)
+                elif gc.MODE == gc.MODE.HUMAN_VS_HUMAN:
+                    put_human_piece(board)
 
         if gc.MODE == gc.MODE.HUMAN_VS_AGENT and board.current_player is WHITE:
             if current_time - last_move_time > gc.AGENT_MOVE_TIME:
