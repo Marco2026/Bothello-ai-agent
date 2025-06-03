@@ -1,4 +1,5 @@
 import pygame as pg
+import copy
 from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, GENERATE_TRAINING_DATA
 from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
@@ -17,17 +18,33 @@ DIRECTIONS = {
 
 class Board:
 
-    def __init__(self):
-        self.board = []
+    def __init__(self, board=[], current_player=BLACK):
+        self.board = board
         self.possible_movements = []
         self.turn = 0
         self.last_piece = None 
         self.white_pieces = 2
         self.black_pieces = 2
-        self.current_player = BLACK
+        self.winner = None
+        self.game_finished = False
+        self.current_player = current_player
         self.build_initial_board()
         if GENERATE_TRAINING_DATA:
             training_data_initializer()
+
+    def copy(self):
+        new_board = Board()
+        new_board.board = copy.deepcopy(self.board)
+        new_board.possible_movements = copy.deepcopy(self.possible_movements)
+        new_board.turn = self.turn
+        new_board.last_piece = self.last_piece
+        new_board.white_pieces = self.white_pieces
+        new_board.black_pieces = self.black_pieces
+        new_board.current_player = self.current_player
+        new_board.game_finished = self.game_finished
+        new_board.winner = self.winner
+        return new_board
+
 
     def build_initial_board(self):
         for row in range(ROWS + 1):
@@ -54,7 +71,7 @@ class Board:
             if GENERATE_TRAINING_DATA:
                 training_data_generator(self)
 
-    def change_current_player(self):
+    def change_current_player(self):    
         if self.current_player == WHITE: self.current_player = BLACK 
         else: self.current_player = WHITE 
         self.get_possible_movements()
@@ -64,9 +81,24 @@ class Board:
             else: self.current_player = WHITE 
             self.get_possible_movements()
 
-            if not self.possible_movements:
-                self.current_player = None
-
+            if len(self.possible_movements) == 0:
+                self.finish_game()
+                
+            
+    def finish_game (self):
+        self.winner = self.get_winner()
+        self.current_player = None
+        self.game_finished = True
+        
+        
+    def get_winner(self):
+        if self.white_pieces > self.black_pieces:
+            return WHITE
+        elif self.black_pieces > self.white_pieces:
+            return BLACK
+        else:
+            return None
+        
     def get_possible_movements(self):
         res = set()
         for row in range(ROWS):
@@ -184,4 +216,6 @@ class Board:
         for (row, col) in possible_movements:
             pos = (col * SQUARE_SIZE + 2, row * SQUARE_SIZE + 2)
             screen.blit(highlight, pos)
+
+    
         

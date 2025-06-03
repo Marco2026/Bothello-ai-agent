@@ -119,8 +119,10 @@ def play_game():
         board.draw_screen(screen)
 
         turn_information = FONT.render(f"The turn is: {board.turn}", True, BLACK)
-        if board.current_player is None and len(board.possible_movements) == 0:
-            current_player_information = FONT.render("Game Over!", True, BLACK)
+        if board.game_finished: 
+            if board.winner is None: message = "It's a draw"
+            else : message = f"{get_color_from_rgb(board.winner)} wins"
+            current_player_information = FONT.render(f"Game Over! {message}", True, BLACK)
         else: current_player_information = FONT.render(f"Current player: {get_color_from_rgb(board.current_player)}", True, BLACK)
         white_pieces_information = FONT.render(f"White pieces: {board.white_pieces}", True, BLACK)
         black_pieces_information = FONT.render(f"Black pieces: {board.black_pieces}", True, BLACK)
@@ -150,7 +152,10 @@ def play_game():
             if current_time - last_move_time > gc.AGENT_MOVE_TIME:
                 last_move_time = current_time
                 put_agent_piece(agent, board)
-
+        
+        if board.black_pieces + board.white_pieces == len(board.board):
+            board.finish_game
+        
         pg.display.flip()
 
 
