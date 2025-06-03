@@ -1,5 +1,6 @@
 import pygame as pg
 import copy
+import time
 from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, GENERATE_TRAINING_DATA
 from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
@@ -18,8 +19,8 @@ DIRECTIONS = {
 
 class Board:
 
-    def __init__(self, board=[], current_player=BLACK):
-        self.board = board
+    def __init__(self, board=[], current_player= BLACK):
+        self.board = board if board else []
         self.possible_movements = []
         self.turn = 0
         self.last_piece = None 
@@ -81,7 +82,7 @@ class Board:
             else: self.current_player = WHITE 
             self.get_possible_movements()
 
-            if len(self.possible_movements) == 0:
+            if self.possible_movements is None and self.current_player is None:
                 self.finish_game()
                 
             
@@ -192,7 +193,7 @@ class Board:
                     piece.draw_piece(screen)
 
     def draw_movements(self, screen, current_player=None, possible_movements=None):
-        if self.current_player is None:
+        if self.game_finished:
             for row in range(ROWS + 1):
                 pg.draw.line(screen, WHITE, (0, row * SQUARE_SIZE), (BOARD_WIDTH, row * SQUARE_SIZE), 2)
             for col in range (COLS + 1):
