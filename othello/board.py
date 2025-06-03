@@ -24,6 +24,8 @@ class Board:
         self.last_piece = None 
         self.white_pieces = 2
         self.black_pieces = 2
+        self.winner = None
+        self.game_finished = False
         self.current_player = BLACK
         self.build_initial_board()
         if GENERATE_TRAINING_DATA:
@@ -54,7 +56,7 @@ class Board:
             if GENERATE_TRAINING_DATA:
                 training_data_generator(self)
 
-    def change_current_player(self):
+    def change_current_player(self):    
         if self.current_player == WHITE: self.current_player = BLACK 
         else: self.current_player = WHITE 
         self.get_possible_movements()
@@ -64,9 +66,24 @@ class Board:
             else: self.current_player = WHITE 
             self.get_possible_movements()
 
-            if not self.possible_movements:
-                self.current_player = None
-
+            if len(self.possible_movements) == 0:
+                self.finish_game()
+                
+            
+    def finish_game (self):
+        self.winner = self.get_winner()
+        self.current_player = None
+        self.game_finished = True
+        
+        
+    def get_winner(self):
+        if self.white_pieces > self.black_pieces:
+            return WHITE
+        elif self.black_pieces > self.white_pieces:
+            return BLACK
+        else:
+            return None
+        
     def get_possible_movements(self):
         res = set()
         for row in range(ROWS):
@@ -184,4 +201,6 @@ class Board:
         for (row, col) in possible_movements:
             pos = (col * SQUARE_SIZE + 2, row * SQUARE_SIZE + 2)
             screen.blit(highlight, pos)
+
+    
         
