@@ -57,7 +57,6 @@ def main_menu():
                     running = False
 
         pg.display.flip()
-
     pg.quit()
 
 def options_menu():
@@ -101,8 +100,6 @@ def options_menu():
 
         pg.display.flip()
 
-    pg.quit()
-
 def play_game():
     screen.fill(BLACK)
     board = Board()
@@ -137,28 +134,24 @@ def play_game():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+            if gc.MODE == gc.MODE.HUMAN_VS_AGENT and board.current_player is BLACK:
+                last_move_time = current_time
+                put_human_piece(board)
+            elif gc.MODE == gc.MODE.HUMAN_VS_HUMAN:
+                put_human_piece(board)
 
-            if gc.MODE == gc.MODE.HUMAN_VS_AGENT:
-                if board.current_player is BLACK:
-                    if event.type == pg.MOUSEBUTTONDOWN:
-                        last_move_time = current_time
-                        put_human_piece(board)
-                else:
-                    if current_time - last_move_time > gc.AGENT_MOVE_TIME:
-                        last_move_time = current_time
-                        put_agent_piece(agent, board)
-            elif gc.MODE == gc.MODE.AGENT_VS_AGENT:
-                if current_time - last_move_time > gc.AGENT_MOVE_TIME:
-                    last_move_time = current_time
-                    put_agent_piece(agent, board)
-            else:
-                if event.type == pg.MOUSEBUTTONDOWN:
-                    put_human_piece(board)
+        if gc.MODE == gc.MODE.HUMAN_VS_AGENT and board.current_player is WHITE:
+            if current_time - last_move_time > gc.AGENT_MOVE_TIME:
+                last_move_time = current_time
+                put_agent_piece(agent, board)
 
-       
+        elif gc.MODE == gc.MODE.AGENT_VS_AGENT:
+            if current_time - last_move_time > gc.AGENT_MOVE_TIME:
+                last_move_time = current_time
+                put_agent_piece(agent, board)
+
         pg.display.flip()
 
-    pg.quit()
 
 def put_human_piece(board):
     pos = pg.mouse.get_pos()
@@ -207,6 +200,5 @@ def parse_mode(mode):
         case gc.MODE.AGENT_VS_AGENT:
             res = "Agent vs Agent"
     return res
-
 
 main_menu()
