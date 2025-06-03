@@ -115,7 +115,7 @@ def play_game():
 
     while running:
         clock.tick(FPS)
-
+        screen.fill(BLACK)
         board.draw_screen(screen)
 
         turn_information = FONT.render(f"The turn is: {board.turn}", True, BLACK)
@@ -153,8 +153,8 @@ def play_game():
                 last_move_time = current_time
                 put_agent_piece(agent, board)
         
-        if board.black_pieces + board.white_pieces == len(board.board):
-            board.finish_game
+        if board.black_pieces + board.white_pieces == gc.ROWS * gc.COLS:
+            board.finish_game()
         
         pg.display.flip()
 
