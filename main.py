@@ -109,13 +109,11 @@ def play_game():
     clock = pg.time.Clock()
 
     last_move_time = pg.time.get_ticks()
-    
     if gc.MODE != gc.MODE.HUMAN_VS_HUMAN: 
         agent = Agent()
 
     while running:
         clock.tick(FPS)
-        screen.fill(BLACK)
         board.draw_screen(screen)
 
         turn_information = FONT.render(f"The turn is: {board.turn}", True, BLACK)
