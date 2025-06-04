@@ -1,5 +1,5 @@
 import time
-from hyperparameters import TIME_TO_SEARCH, CONSTANT_C
+from .hyperparameters import TIME_TO_SEARCH, CONSTANT_C
 import math
 import random
 from othello.board import Board
@@ -24,25 +24,24 @@ class Node:
     
 class State:
     def __init__(self, board, current_player):
-        game = Board (board, current_player)
+        game = Board(board, current_player)
         game_copy = game.copy()
         self.game = game_copy
         self.board = board
         self.current_player = current_player
-        self.actions = game_copy.get_possible_movements(current_player)
+        self.actions = game_copy.possible_movements
         self.isTerminal = game_copy.game_finished
         self.reward = 0
 
     def copy(self):
-        return State(self)
+        return State(self.board, self.current_player)
 
     def apply_action(self, action):
-        self.game.put_piece(action.row, action.col)
+        self.game.put_piece(action[0], action[1])
         self.game.change_current_player()
         self.current_player = self.game.current_player
-        self.actions = self.game.get_possible_movements(self.current_player)
+        self.actions = self.game.possible_movements
         self.isTerminal = self.game.game_finished
-
 
 class Action:
     def __init__(self, row, col, player_color=None):
@@ -62,6 +61,23 @@ class Action:
 
     def __hash__(self):
         return hash((self.row, self.col, self.player_color))
+    
+def uct_search(state):
+    root = Node(state.board, state.current_player)
+    time_elapsed, time_limit = generate_time_countdown(TIME_TO_SEARCH)
+    while is_time_remaining(time_elapsed, time_limit):
+        leaf = tree_policy(root)
+        reward = default_policy(leaf.state)
+        backup(leaf, reward)
+        time_elapsed = time.time()
+    return best_child(root, 0).action_selected
+
+def tree_policy(node):
+    while node.isTerminal == False:
+        if node.isExpanded == False:
+            return expand(node)
+        else:
+            node = best_child(node, CONSTANT_C)
 
 def expand(node):
     for action in node.state.actions:
@@ -80,7 +96,7 @@ def best_child(node, constant_c):
 
 def default_policy(state):
     simulation_state = state.copy()
-    while not simulation_state.isTerminal:
+    while not simulation_state.isTerminal and simulation_state.actions != []: # Esta linea debe ser revisada, esta puesta para que no explote el juego
         action = random.choice(simulation_state.actions)
         simulation_state.apply_action(action)
     return simulation_state.reward
@@ -97,7 +113,10 @@ def next_state(state, action):
     return new_state
 
 def calculate_upper_confidence_bound(node, parent_visits, constant_c):
-    return node.calculate_average_value() + 2 * constant_c * math.sqrt(math.log(parent_visits) / node.visits)
+    res = 1000000
+    if node.visits > 0:
+        res = node.calculate_average_value() + 2 * constant_c * math.sqrt(math.log(parent_visits) / node.visits)
+    return res
 
 def generate_time_countdown(time_to_search):
     return time.time(), time.time() + time_to_search

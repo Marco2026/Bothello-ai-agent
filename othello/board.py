@@ -19,7 +19,7 @@ DIRECTIONS = {
 
 class Board:
 
-    def __init__(self, board=[], current_player= BLACK):
+    def __init__(self, board=[], current_player=BLACK):
         self.board = board if board else []
         self.possible_movements = []
         self.turn = 0
