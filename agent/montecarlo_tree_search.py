@@ -38,7 +38,6 @@ class State:
 
     def apply_action(self, action):
         self.game.put_piece(action[0], action[1])
-        self.game.change_current_player()
         self.current_player = self.game.current_player
         self.actions = self.game.possible_movements
         self.isTerminal = self.game.game_finished
@@ -96,7 +95,11 @@ def best_child(node, constant_c):
 
 def default_policy(state):
     simulation_state = state.copy()
-    while not simulation_state.isTerminal and simulation_state.actions != []: # Esta linea debe ser revisada, esta puesta para que no explote el juego
+    while not simulation_state.isTerminal:
+        print(simulation_state.game.current_player)
+        print(simulation_state.actions)
+        print(simulation_state.game.turn)
+        print(len(simulation_state.game.board))
         action = random.choice(simulation_state.actions)
         simulation_state.apply_action(action)
     return simulation_state.reward
