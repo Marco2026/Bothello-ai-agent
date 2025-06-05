@@ -35,5 +35,8 @@ class Piece:
     def __repr__(self):
         return str(f'Piece(row: {self.row}, col: {self.col}, color:{self.color})')
     
+    def copy(self):
+        return Piece(self.row, self.col, self.color)
+    
 def scale_piece(piece):
     return pg.transform.scale(piece, (SQUARE_SIZE, SQUARE_SIZE))

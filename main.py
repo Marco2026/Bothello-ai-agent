@@ -27,10 +27,6 @@ def main_menu():
 
         MENU_TEXT = FONT.render("Othello, creado por Fran y Marco", True, BLACK)
         MENU_RECT = MENU_TEXT.get_rect(center=(gc.SCREEN_WIDTH // 2,100))
-
-        screen.blit(MENU_BACKGROUND, (-200,0))
-        screen.blit(pg.image.load("othello/assets/text_menu_rect.png"), (gc.SCREEN_WIDTH // 12, 75))
-        
         MOUSE_POS = pg.mouse.get_pos()
         PLAY_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
                              text_input="PLAY", font=FONT, base_color=BLACK, hovering_color=WHITE)
@@ -39,6 +35,8 @@ def main_menu():
         QUIT_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
                              text_input="QUIT", font=FONT, base_color=BLACK, hovering_color=WHITE)
         
+        screen.blit(MENU_BACKGROUND, (-200,0))
+        screen.blit(pg.image.load("othello/assets/text_menu_rect.png"), (gc.SCREEN_WIDTH // 12, 75))
         screen.blit(MENU_TEXT, MENU_RECT)
         
         for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
@@ -69,10 +67,6 @@ def options_menu():
 
         OPTIONS_TEXT = FONT.render("Here you can change the options", True, BLACK)
         OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(gc.SCREEN_WIDTH // 2,100))
-
-        screen.blit(MENU_BACKGROUND, (-200,0))
-        screen.blit(pg.image.load("othello/assets/text_menu_rect.png"), (gc.SCREEN_WIDTH // 12, 75))
-
         MOUSE_POS = pg.mouse.get_pos()
         MODE_BUTTON = Button(image=pg.image.load("othello/assets/text_menu_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
                              text_input=f"CHANGE MODE: {parse_mode(gc.MODE)}", font=FONT, base_color=BLACK, hovering_color=WHITE)
@@ -81,6 +75,8 @@ def options_menu():
         MENU_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
                              text_input="MENU", font=FONT, base_color=BLACK, hovering_color=WHITE)
         
+        screen.blit(MENU_BACKGROUND, (-200,0))
+        screen.blit(pg.image.load("othello/assets/text_menu_rect.png"), (gc.SCREEN_WIDTH // 12, 75))
         screen.blit(OPTIONS_TEXT, OPTIONS_RECT)
         
         for button in [MODE_BUTTON, TRAINING_DATA_BUTTON, MENU_BUTTON]:
@@ -102,12 +98,11 @@ def options_menu():
 
 def play_game():
     screen.fill(BLACK)
-    board = Board()
-    board.build_initial_board()
-
     running = True
     clock = pg.time.Clock()
 
+    board = Board()
+    board.build_initial_board()
     last_move_time = pg.time.get_ticks()
     if gc.MODE != gc.MODE.HUMAN_VS_HUMAN: 
         agent = Agent()
@@ -150,9 +145,6 @@ def play_game():
             if current_time - last_move_time > gc.AGENT_MOVE_TIME:
                 last_move_time = current_time
                 put_agent_piece(agent, board)
-        
-        if board.black_pieces + board.white_pieces == gc.ROWS * gc.COLS:
-            board.finish_game()
         
         pg.display.flip()
 
