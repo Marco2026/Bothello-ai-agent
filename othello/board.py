@@ -19,36 +19,20 @@ DIRECTIONS = {
 
 class Board:
 
-    def __init__(self, board=[], current_player=BLACK):
-        self.board = board if board else []
-        self.possible_movements = []
-        self.turn = 0
-        self.last_piece = None 
-        self.white_pieces = 2
-        self.black_pieces = 2
-        self.winner = None
-        self.game_finished = False
+    def __init__(self, board=None, current_player=BLACK):
         self.current_player = current_player
-        self.build_initial_board()
-        if GENERATE_TRAINING_DATA:
-            training_data_initializer()
+        if board is None:
+            self.build_initial_board()
+        else:
+            self.load_from_board(board)
 
-    def copy(self):
-        new_board = Board()
-        new_board.board = copy.deepcopy(self.board)
-        new_board.possible_movements = copy.deepcopy(self.possible_movements)
-        new_board.turn = self.turn
-        new_board.last_piece = self.last_piece
-        new_board.white_pieces = self.white_pieces
-        new_board.black_pieces = self.black_pieces
-        new_board.current_player = self.current_player
-        new_board.game_finished = self.game_finished
-        new_board.winner = self.winner
-        return new_board
-
+        self.get_possible_movements()
+        if self.possible_movements == []:
+            self.change_current_player()
 
     def build_initial_board(self):
-        for row in range(ROWS + 1):
+        self.board = []
+        for row in range(ROWS):
             self.board.append([])
             for col in range(COLS):
                 self.board[row].append(None)
@@ -56,10 +40,60 @@ class Board:
         self.board[ROWS // 2 - 1][COLS // 2 - 1] = Piece(ROWS // 2 - 1, COLS // 2 - 1, WHITE) 
         self.board[ROWS // 2 - 1][COLS // 2] = Piece(ROWS // 2 - 1, COLS // 2, BLACK) 
         self.board[ROWS // 2][COLS // 2 - 1] = Piece(ROWS // 2, COLS // 2 - 1, BLACK) 
-        self.board[ROWS // 2][COLS // 2] = Piece(ROWS // 2, COLS // 2, WHITE) 
+        self.board[ROWS // 2][COLS // 2] = Piece(ROWS // 2, COLS // 2, WHITE)
 
-        self.get_possible_movements()
+        self.turn = 0
+        self.last_piece = None
+        self.white_pieces = 2
+        self.black_pieces = 2
+        self.game_finished = False
+        self.winner = None
+        if GENERATE_TRAINING_DATA:
+            training_data_initializer()
 
+    def load_from_board(self, board_to_copy):
+        self.board = []
+        for row in range(ROWS):
+            rows = []
+            for col in range(COLS):
+                piece = board_to_copy[row][col]
+                if piece is None:
+                    rows.append(None)
+                else:
+                    rows.append(piece.copy())
+            self.board.append(rows)
+        self.turn = 0
+        self.last_piece = None
+        self.white_pieces = 0
+        self.black_pieces = 0
+        self.game_finished = False
+        self.winner = None
+
+        self.update_number_of_pieces()
+        self.turn = self.white_pieces + self.black_pieces - 4
+
+    def copy(self):
+        copied_board = []
+        for row in range(ROWS):
+            rows = []
+            for col in range(COLS):
+                piece = self.board[row][col]
+                if piece is None:
+                    rows.append(None)
+                else:
+                    rows.append(piece.copy())
+            copied_board.append(rows)
+        new_board = Board(copied_board, self.current_player)
+        new_board.white_pieces = self.white_pieces
+        new_board.black_pieces = self.black_pieces
+        new_board.turn = self.turn
+        if self.game_finished:
+            new_board.winner = self.winner
+            new_board.current_player = None
+            new_board.game_finished = True
+            new_board.possible_movements = []
+        return new_board
+        
     def put_piece(self, row, col):
         if self.board[row][col] == None and (row,col) in self.possible_movements:
             piece = Piece(row, col, color=self.current_player)
@@ -82,16 +116,14 @@ class Board:
             else: self.current_player = WHITE 
             self.get_possible_movements()
 
-            if self.possible_movements is None and self.current_player is None:
+            if len(self.possible_movements) == 0:
                 self.finish_game()
-                
-            
-    def finish_game (self):
+
+    def finish_game(self):
         self.winner = self.get_winner()
         self.current_player = None
         self.game_finished = True
-        
-        
+
     def get_winner(self):
         if self.white_pieces > self.black_pieces:
             return WHITE
@@ -119,13 +151,11 @@ class Board:
                 break
         return res
 
-
     def capture_pieces(self):
         pieces_to_capture = []
         for direction in DIRECTIONS.keys():
             pieces_to_capture += self.get_pieces_direction(self.last_piece, direction)
         self.change_pieces_color(pieces_to_capture)
-
 
     def get_pieces_direction(self, last_piece, direction):
         res = []
@@ -171,6 +201,9 @@ class Board:
                         black_number += 1
         self.white_pieces = white_number
         self.black_pieces = black_number
+
+        if self.black_pieces + self.white_pieces >= ROWS * COLS:
+                self.finish_game()
             
     def draw_screen(self, screen):
         self.draw_board(screen)
