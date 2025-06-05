@@ -14,6 +14,7 @@ class Node:
         self.state = state
         self.action_selected = action_selected
         self.isTerminal = state.isTerminal
+        
 
     def calculate_average_value(self):
         if self.visits == 0:
@@ -21,17 +22,18 @@ class Node:
         return  self.reward / self.visits
     
 class State:
-    def __init__(self, board, current_player):
+    def __init__(self, board, current_player, root_player=None):
         self.game = Board(board, current_player)
         self.board = self.game.board
         self.current_player = self.game.current_player
         self.actions = self.game.possible_movements
         self.isTerminal = self.game.game_finished
         self.reward = 0
+        self.root_player = root_player
 
     def copy(self):
         new_game = self.game.copy()
-        new_state = State(new_game.board, new_game.current_player)
+        new_state = State(new_game.board, new_game.current_player, self.root_player)
         new_state.game = new_game
         new_state.board = new_game.board
         new_state.actions = new_game.possible_movements
@@ -45,9 +47,9 @@ class State:
         self.actions = self.game.possible_movements
         self.isTerminal = self.game.game_finished
 
-    def caculate_reward(self, root_player):
+    def caculate_reward(self):
         winner = self.game.get_winner()
-        if winner == root_player:
+        if winner == self.root_player:
             return 1
         elif winner is None:
             return 0
@@ -74,7 +76,7 @@ class Action:
         return hash((self.row, self.col, self.player_color))
     
 def uct_search(state):
-    root_state = State(state.board, state.current_player)
+    root_state = State(state.board, state.current_player, state.current_player)
     root = Node(root_state)
     time_elapsed, time_limit = generate_time_countdown(TIME_TO_SEARCH)
     while is_time_remaining(time_elapsed, time_limit):
@@ -112,7 +114,7 @@ def default_policy(state):
     while not simulation_state.isTerminal:
         action = random.choice(simulation_state.actions)
         simulation_state.apply_action(action)
-    return simulation_state.reward
+    return simulation_state.caculate_reward()
 
 def backup(node, reward):
     while node is not None:

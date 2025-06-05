@@ -48,7 +48,8 @@ class Board:
         self.black_pieces = 2
         self.game_finished = False
         self.winner = None
-        if GENERATE_TRAINING_DATA:
+        self.is_original = True
+        if GENERATE_TRAINING_DATA and self.is_original:
             training_data_initializer()
 
     def load_from_board(self, board_to_copy):
@@ -68,6 +69,7 @@ class Board:
         self.black_pieces = 0
         self.game_finished = False
         self.winner = None
+        self.is_original = False
 
         self.update_number_of_pieces()
         self.turn = self.white_pieces + self.black_pieces - 4
@@ -103,7 +105,7 @@ class Board:
             self.change_current_player()
             self.update_number_of_pieces()
             self.turn += 1
-            if GENERATE_TRAINING_DATA:
+            if GENERATE_TRAINING_DATA and self.is_original:
                 training_data_generator(self)
 
     def change_current_player(self):    
