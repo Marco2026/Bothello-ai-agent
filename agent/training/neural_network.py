@@ -5,29 +5,58 @@ from keras import Sequential, Input
 from keras.layers import Dense, Normalization
 from keras.optimizers import SGD
 
-othello_games = pd.read_csv('agent/training/training_data.csv', delimiter=";")
+class OthelloNet:
 
-attributes = othello_games.drop(labels='current_player_won', axis=1)
-target = othello_games['current_player_won']
+    def __init__(self):
+        (self.training_attributes, 
+         self.test_attributes, 
+         self.training_target, 
+         self.test_target) = self.prepare_data()
+        self.model = self.build_model()        
 
-(training_attributes, test_attributes,
-training_target, test_target) = train_test_split(
-    attributes, target,
-    test_size = .2)
+    def prepare_data(self):
+        othello_games = pd.read_csv('agent/training/training_data.csv', delimiter=";")
 
-normalizator = Normalization()
-normalizator.adapt(training_attributes.to_numpy())
+        attributes = othello_games.drop(labels='current_player_won', axis=1)
+        target = othello_games['current_player_won']
 
-test_othello_net = Sequential()
-test_othello_net.add(Input(shape=(64,)))
-test_othello_net.add(normalizator)
-test_othello_net.add(Dense(16, activation='tanh'))
-test_othello_net.add(Dense(1))
+        (training_attributes, test_attributes,
+        training_target, test_target) = train_test_split(
+            attributes, target,
+            test_size = .2
+        )
 
-test_othello_net.compile(optimizer=SGD(learning_rate=0.01), loss='mean_absolute_error')
-test_othello_net.fit(training_attributes, training_target, batch_size=256, epochs=100)
+        return (training_attributes, test_attributes, training_target, test_target)
 
-test_othello_net.evaluate(test_attributes, test_target)
+    def build_model(self):
+        normalizator = Normalization()
+        normalizator.adapt(self.training_attributes.to_numpy())
 
-def check_dataset_status(dataset):
-    dataset.isna().any()
+        model = Sequential()
+        model.add(Input(shape=(64,)))
+        model.add(normalizator)
+        model.add(Dense(16, activation='tanh'))
+        model.add(Dense(5))
+
+        model.compile(optimizer=SGD(learning_rate=0.01), loss='mean_squared_error')
+        return model
+
+    def train_model(self):
+        history = self.model.fit(self.training_attributes, self.training_target, batch_size=256, epochs=100)
+        return history.history
+
+    def evaluate_model(self):
+        resultado = self.model.evaluate(self.test_attributes, self.test_target)
+        return resultado
+    
+    def predict(self, state):
+        if isinstance(state, pd.DataFrame):
+            state_np = state.to_numpy()
+        else:
+            state_np = state
+
+        prediction = self.model.predict(state_np)
+        return prediction
+
+    def check_dataset_status(dataset):
+        dataset.isna().any()
