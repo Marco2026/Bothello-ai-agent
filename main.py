@@ -1,4 +1,7 @@
+import threading
+import time
 import pygame as pg
+import random
 from othello.board import Board
 import othello.game_config as gc
 from othello.colors import BLACK, WHITE
@@ -17,6 +20,8 @@ MENU_BACKGROUND = pg.image.load("othello/assets/othello_menu_background_blurred.
 pg.display.set_caption(NAME)
 pg.display.set_icon(pg.image.load("othello/assets/white_piece.png"))
 screen = pg.display.set_mode(SIZE)
+
+
 
 def main_menu():
     running = True
@@ -68,8 +73,8 @@ def options_menu():
         OPTIONS_TEXT = FONT.render("Here you can change the options", True, BLACK)
         OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(gc.SCREEN_WIDTH // 2,100))
         MOUSE_POS = pg.mouse.get_pos()
-        MODE_BUTTON = Button(image=pg.image.load("othello/assets/text_menu_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
-                             text_input=f"CHANGE MODE: {parse_mode(gc.MODE)}", font=FONT, base_color=BLACK, hovering_color=WHITE)
+        # MODE_BUTTON = Button(image=pg.image.load("othello/assets/text_menu_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
+        #                      text_input=f"CHANGE MODE: {parse_mode(gc.MODE)}", font=FONT, base_color=BLACK, hovering_color=WHITE)
         TRAINING_DATA_BUTTON = Button(image=pg.image.load("othello/assets/text_menu_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 100),
                              text_input=f"GENERATE TRAINING DATA: {gc.GENERATE_TRAINING_DATA}", font=FONT, base_color=BLACK, hovering_color=WHITE)
         MENU_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
@@ -79,7 +84,11 @@ def options_menu():
         screen.blit(pg.image.load("othello/assets/text_menu_rect.png"), (gc.SCREEN_WIDTH // 12, 75))
         screen.blit(OPTIONS_TEXT, OPTIONS_RECT)
         
-        for button in [MODE_BUTTON, TRAINING_DATA_BUTTON, MENU_BUTTON]:
+        # for button in [MODE_BUTTON, TRAINING_DATA_BUTTON, MENU_BUTTON]:
+        #     button.changeColor(MOUSE_POS)
+        #     button.update(screen)
+        
+        for button in [TRAINING_DATA_BUTTON, MENU_BUTTON]:
             button.changeColor(MOUSE_POS)
             button.update(screen)
 
@@ -87,8 +96,8 @@ def options_menu():
             if event.type == pg.QUIT:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
-                if MODE_BUTTON.checkForInput(MOUSE_POS):
-                    change_mode()
+                # if MODE_BUTTON.checkForInput(MOUSE_POS):
+                #     change_mode()
                 if TRAINING_DATA_BUTTON.checkForInput(MOUSE_POS):
                     change_generate_training_data()
                 if MENU_BUTTON.checkForInput(MOUSE_POS):
@@ -97,19 +106,23 @@ def options_menu():
         pg.display.flip()
 
 def play_game():
-    screen.fill(BLACK)
+    
     running = True
     clock = pg.time.Clock()
 
     board = Board()
     board.build_initial_board()
     last_move_time = pg.time.get_ticks()
-    if gc.MODE != gc.MODE.HUMAN_VS_HUMAN: 
-        agent = Agent()
+    clic_position = (99, 99)    
+    agent1 = Agent()
+    agent2 = Agent()
+    
 
     while running:
         clock.tick(FPS)
+        screen.fill(BLACK)
         board.draw_screen(screen)
+        current_time = pg.time.get_ticks()
 
         turn_information = FONT.render(f"The turn is: {board.turn}", True, BLACK)
         if board.game_finished: 
@@ -124,42 +137,55 @@ def play_game():
         screen.blit(current_player_information, (10, gc.BOARD_HEIGHT + 40))
         screen.blit(black_pieces_information, (gc.BOARD_WIDTH - 250, gc.BOARD_HEIGHT + 10))
         screen.blit(white_pieces_information, (gc.BOARD_WIDTH - 250, gc.BOARD_HEIGHT + 40))
-        current_time = pg.time.get_ticks()
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
-                if gc.MODE == gc.MODE.HUMAN_VS_AGENT and board.current_player is BLACK:
-                    last_move_time = current_time
-                    put_human_piece(board)
-                elif gc.MODE == gc.MODE.HUMAN_VS_HUMAN:
-                    put_human_piece(board)
+                clic_position = pg.mouse.get_pos()
 
-        if gc.MODE == gc.MODE.HUMAN_VS_AGENT and board.current_player is WHITE:
-            if current_time - last_move_time > gc.AGENT_MOVE_TIME:
-                last_move_time = current_time
-                put_agent_piece(agent, board)
-
-        elif gc.MODE == gc.MODE.AGENT_VS_AGENT:
-            if current_time - last_move_time > gc.AGENT_MOVE_TIME:
-                last_move_time = current_time
-                put_agent_piece(agent, board)
-        
+        if board.current_player is BLACK:
+            mode = gc.PLAYER_1
+            agent = agent1
+        else:
+            mode = gc.PLAYER_2
+            agent = agent2
+            
+        if mode == gc.PlayerMode(0):
+            put_human_piece(board, clic_position)
+            last_move_time
+        elif mode == gc.PlayerMode(1) and current_time - last_move_time >= gc.BOT_MOVE_TIME:
+            put_bot_piece(board, agent)
+            last_move_time = pg.time.get_ticks()
+        elif mode == gc.PlayerMode(2) and not agent.is_thinking:
+            agent.is_thinking = True
+            put_agent_piece(board, agent)
+            last_move_time = pg.time.get_ticks()
+            
         pg.display.flip()
 
 
-def put_human_piece(board):
-    pos = pg.mouse.get_pos()
+
+def put_human_piece(board,pos):
     row, col = get_row_col_from_mouse(pos)
     board.put_piece(row, col)
 
-def put_agent_piece(agent, board):
+def put_bot_piece(board, agent):
     if not board.possible_movements:
         return
-    agent.make_decision(board)
-    row, col = agent.action
+    row, col = random.choice(board.possible_movements)
     board.put_piece(row, col)
+    
+def put_agent_piece(board, agent):
+    def decide():
+        if not board.possible_movements:
+            return
+        agent.make_decision(board)
+        row, col = agent.action
+        board.put_piece(row, col)
+    threading.Thread(target=decide).start()
+    
+
 
 def get_row_col_from_mouse(pos):
     x, y = pos
@@ -175,26 +201,26 @@ def get_color_from_rgb(rgb_color):
         res = "White"
     return res 
 
-def change_mode():
-    if gc.MODE == gc.MODE.HUMAN_VS_HUMAN:
-        gc.MODE = gc.MODE.HUMAN_VS_AGENT
-    elif gc.MODE == gc.MODE.HUMAN_VS_AGENT:
-        gc.MODE = gc.MODE.AGENT_VS_AGENT
-    else:
-        gc.MODE = gc.MODE.HUMAN_VS_HUMAN
+# def change_mode():
+#     if gc.MODE == gc.MODE.HUMAN_VS_HUMAN:
+#         gc.MODE = gc.MODE.HUMAN_VS_AGENT
+#     elif gc.MODE == gc.MODE.HUMAN_VS_AGENT:
+#         gc.MODE = gc.MODE.AGENT_VS_AGENT
+#     else:
+#         gc.MODE = gc.MODE.HUMAN_VS_HUMAN
 
 def change_generate_training_data():
     gc.GENERATE_TRAINING_DATA = not gc.GENERATE_TRAINING_DATA
 
-def parse_mode(mode):
-    res = "Unknown"
-    match mode:
-        case gc.MODE.HUMAN_VS_HUMAN:
-            res = "Human vs Human"
-        case gc.MODE.HUMAN_VS_AGENT:
-            res = "Human vs Agent"
-        case gc.MODE.AGENT_VS_AGENT:
-            res = "Agent vs Agent"
-    return res
+# def parse_mode(mode):
+#     res = "Unknown"
+#     match mode:
+#         case gc.MODE.HUMAN_VS_HUMAN:
+#             res = "Human vs Human"
+#         case gc.MODE.HUMAN_VS_AGENT:
+#             res = "Human vs Agent"
+#         case gc.MODE.AGENT_VS_AGENT:
+#             res = "Agent vs Agent"
+#     return res
 
 main_menu()
