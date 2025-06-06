@@ -14,7 +14,6 @@ class Node:
         self.state = state
         self.action_selected = action_selected
         self.isTerminal = state.isTerminal
-        
 
     def calculate_average_value(self):
         if self.visits == 0:
@@ -75,13 +74,13 @@ class Action:
     def __hash__(self):
         return hash((self.row, self.col, self.player_color))
     
-def uct_search(state):
+def uct_search(state, neural_network):
     root_state = State(state.board, state.current_player, state.current_player)
     root = Node(root_state)
     time_elapsed, time_limit = generate_time_countdown(TIME_TO_SEARCH)
     while is_time_remaining(time_elapsed, time_limit):
         leaf = tree_policy(root)
-        reward = default_policy(leaf.state)
+        reward = default_policy(leaf.state) if neural_network is None else neural_network_policy(state, neural_network)
         backup(leaf, reward)
         time_elapsed = time.time()
     return best_child(root, 0).action_selected
@@ -115,6 +114,11 @@ def default_policy(state):
         action = random.choice(simulation_state.actions)
         simulation_state.apply_action(action)
     return simulation_state.caculate_reward()
+
+def neural_network_policy(state, neural_network):
+    simulation_state = state.copy()
+    reward = neural_network.predict(simulation_state)
+    return reward
 
 def backup(node, reward):
     while node is not None:
