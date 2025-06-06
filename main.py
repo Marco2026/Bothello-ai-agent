@@ -18,10 +18,12 @@ FONT = pg.font.Font("othello/assets/bahnschrift.ttf", 30)
 SMALL_FONT = pg.font.Font("othello/assets/bahnschrift.ttf", 18)
 MENU_BACKGROUND = pg.image.load("othello/assets/othello_menu_background_blurred.jpg")
 
-BUTTON = pg.image.load("othello/assets/button_rect.png")
-BUTTON_SMALL_TEXT = pg.image.load("othello/assets/small_text_rect.png")
-BUTTON_SMALL_TEXT_DISABLED = pg.image.load("othello/assets/small_text_rect_disabled.png")
-BUTTON_TEXT_MENU = pg.image.load("othello/assets/text_menu_rect.png")
+BUTTON_MENU = pg.image.load("othello/assets/button_menu.png")
+BUTTON_MENU_DISABLED = pg.image.load("othello/assets/button_menu_disabled.png")
+BUTTON_SMALL_TEXT = pg.image.load("othello/assets/button_small_text.png")
+BUTTON_SMALL_TEXT_DISABLED = pg.image.load("othello/assets/button_small_text_disabled.png")
+BUTTON_TEXT = pg.image.load("othello/assets/button_text.png")
+
 
 pg.display.set_caption(NAME)
 pg.display.set_icon(pg.image.load("othello/assets/white_piece.png"))
@@ -38,20 +40,30 @@ def main_menu():
         MENU_TEXT = FONT.render("Othello, creado por Fran y Marco", True, BLACK)
         MENU_RECT = MENU_TEXT.get_rect(center=(gc.SCREEN_WIDTH // 2,100))
         MOUSE_POS = pg.mouse.get_pos()
-        PLAY_BUTTON = Button(image=BUTTON, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
+        PLAY_BUTTON = Button(image=BUTTON_MENU, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
                              text_input="PLAY", font=FONT, base_color=BLACK, hovering_color=WHITE)
-        OPTIONS_BUTTON = Button(image=BUTTON, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 100),
+        if gc.PLAYER_2 == gc.PlayerMode(0) or gc.PLAYER_1 == gc.PlayerMode(0):
+            button = BUTTON_MENU_DISABLED
+            hover = BLACK
+        else: 
+           button = BUTTON_MENU
+           hover = WHITE
+        SIMULATION_BUTTON = Button(image=button, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 100),
+                             text_input="SIMULATE", font=FONT, base_color=BLACK, hovering_color=hover)
+        OPTIONS_BUTTON = Button(image=BUTTON_MENU, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
                              text_input="OPTIONS", font=FONT, base_color=BLACK, hovering_color=WHITE)
-        QUIT_BUTTON = Button(image=BUTTON, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
+        QUIT_BUTTON = Button(image=BUTTON_MENU, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 300),
                              text_input="QUIT", font=FONT, base_color=BLACK, hovering_color=WHITE)
         
         screen.blit(MENU_BACKGROUND, (-200,0))
-        screen.blit(pg.image.load("othello/assets/text_menu_rect.png"), (gc.SCREEN_WIDTH // 12, 75))
+        screen.blit(pg.image.load("othello/assets/button_text.png"), (gc.SCREEN_WIDTH // 12, 75))
         screen.blit(MENU_TEXT, MENU_RECT)
         
-        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+        for button in [PLAY_BUTTON, SIMULATION_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
             button.changeColor(MOUSE_POS)
             button.update(screen)
+            if button is SIMULATION_BUTTON and not (gc.PLAYER_2 == gc.PlayerMode(0) or gc.PLAYER_1 == gc.PlayerMode(0)):
+                button.changeColor(MOUSE_POS)
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -59,6 +71,9 @@ def main_menu():
             if event.type == pg.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MOUSE_POS):
                     play_game()
+                if SIMULATION_BUTTON.checkForInput(MOUSE_POS):
+                    setattr(gc,"SIMULATION_MODE", True)
+                    simulate_games()
                 if OPTIONS_BUTTON.checkForInput(MOUSE_POS):
                     options_menu()
                 if QUIT_BUTTON.checkForInput(MOUSE_POS):
@@ -78,9 +93,9 @@ def options_menu():
         OPTIONS_TEXT = FONT.render("Here you can change the options", True, BLACK)
         OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(gc.SCREEN_WIDTH // 2,100))
         MOUSE_POS = pg.mouse.get_pos()
-        PLAYER_1_BUTTON = Button(image=BUTTON_SMALL_TEXT, pos=(gc.SCREEN_WIDTH // 2 - 150, gc.SCREEN_HEIGHT // 2 - 45),
+        PLAYER_1_BUTTON = Button(image=BUTTON_SMALL_TEXT, pos=(gc.SCREEN_WIDTH // 2 - 150, gc.SCREEN_HEIGHT // 2 + 55),
                              text_input=f"PLAYER 1: {parse_player_mode(gc.PLAYER_1)}", font=FONT, base_color=BLACK, hovering_color=WHITE)
-        PLAYER_2_BUTTON = Button(image=BUTTON_SMALL_TEXT, pos=(gc.SCREEN_WIDTH // 2 + 150, gc.SCREEN_HEIGHT // 2 - 45),
+        PLAYER_2_BUTTON = Button(image=BUTTON_SMALL_TEXT, pos=(gc.SCREEN_WIDTH // 2 + 150, gc.SCREEN_HEIGHT // 2 + 55),
                              text_input=f"PLAYER 2: {parse_player_mode(gc.PLAYER_2)}", font=FONT, base_color=BLACK, hovering_color=WHITE)
         if gc.PLAYER_1 == gc.PlayerMode(2):
             button1 = BUTTON_SMALL_TEXT
@@ -88,7 +103,7 @@ def options_menu():
         else: 
            button1 = BUTTON_SMALL_TEXT_DISABLED
            hover1 = BLACK
-        AGENT_1_BUTTON = Button(image=button1, pos=(gc.SCREEN_WIDTH // 2 -  150, gc.SCREEN_HEIGHT // 2 ),
+        AGENT_1_BUTTON = Button(image=button1, pos=(gc.SCREEN_WIDTH // 2 -  150, gc.SCREEN_HEIGHT // 2 + 100),
                             text_input=f"{parse_agent_mode(gc.AGENT_1_NEURAL_NETWORK )}", font=SMALL_FONT, base_color=BLACK, hovering_color=hover1)
         if gc.PLAYER_2 == gc.PlayerMode(2):
             button2 = BUTTON_SMALL_TEXT
@@ -96,15 +111,16 @@ def options_menu():
         else: 
            button2 = BUTTON_SMALL_TEXT_DISABLED
            hover2 = BLACK
-        AGENT_2_BUTTON = Button(image=button2, pos=(gc.SCREEN_WIDTH // 2 + 150, gc.SCREEN_HEIGHT // 2 ),
+        AGENT_2_BUTTON = Button(image=button2, pos=(gc.SCREEN_WIDTH // 2 + 150, gc.SCREEN_HEIGHT // 2 + 100),
                             text_input=f"{parse_agent_mode(gc.AGENT_2_NEURAL_NETWORK )}", font=SMALL_FONT, base_color=BLACK, hovering_color=hover2)
-        TRAINING_DATA_BUTTON = Button(image=BUTTON_TEXT_MENU, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 100),
+        TRAINING_DATA_BUTTON = Button(image=BUTTON_TEXT, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
                              text_input=f"GENERATE TRAINING DATA: {gc.GENERATE_TRAINING_DATA}", font=FONT, base_color=BLACK, hovering_color=WHITE)
-        MENU_BUTTON = Button(image=BUTTON, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
+        
+        MENU_BUTTON = Button(image=BUTTON_MENU, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 300),
                              text_input="MENU", font=FONT, base_color=BLACK, hovering_color=WHITE)
         
         screen.blit(MENU_BACKGROUND, (-200,0))
-        screen.blit(pg.image.load("othello/assets/text_menu_rect.png"), (gc.SCREEN_WIDTH // 12, 75))
+        screen.blit(pg.image.load("othello/assets/button_text.png"), (gc.SCREEN_WIDTH // 12, 75))
         screen.blit(OPTIONS_TEXT, OPTIONS_RECT)
         
         
@@ -133,8 +149,7 @@ def options_menu():
                 if TRAINING_DATA_BUTTON.checkForInput(MOUSE_POS):
                     change_generate_training_data()
                 if MENU_BUTTON.checkForInput(MOUSE_POS):
-                    main_menu()
-
+                    running = False
         pg.display.flip()
 
 def play_game():
@@ -148,6 +163,7 @@ def play_game():
     clic_position = (99, 99)    
     agent1 = Agent()
     agent2 = Agent()
+    
     
 
     while running:
@@ -193,7 +209,10 @@ def play_game():
             agent.is_thinking = True
             put_agent_piece(board, agent)
             last_move_time = pg.time.get_ticks()
-            
+        
+        if board.game_finished and gc.SIMULATION_MODE:
+            running = False
+
         pg.display.flip()
 
 
@@ -271,5 +290,12 @@ def change_agent_mode(agent, player_name): # Descomentar cuando se implemente la
     # setattr(gc, agent, new_agent)
     # return new_agent
     
+def simulate_games (num_games = gc.SIMULATIONS):
+    if gc.PLAYER_1 == gc.PlayerMode(0) or gc.PLAYER_2 == gc.PlayerMode(0):
+        return
+    for i in range(num_games):
+        print(f"Ejecutando partida {i+1} de {num_games}")
+        play_game()
+   
 
 main_menu()
