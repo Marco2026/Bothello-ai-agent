@@ -18,7 +18,7 @@ class PlayerMode(Enum):
 
 class NeuralNetwork(Enum):
     NEURAL_NETWORK_STARTER = 0  
-    NEURAL_NETWORK_WITH_CURRENT_PLAYER = 1  
+    NEURAL_NETWORK_IMPROVED = 1  
 
 PLAYER_1 = PlayerMode(2)
 PLAYER_2 = PlayerMode(1)

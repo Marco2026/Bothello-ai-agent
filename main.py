@@ -15,12 +15,17 @@ FPS = 60
 NAME = "Othello Game"
 SIZE = (gc.SCREEN_WIDTH, gc.SCREEN_HEIGHT)
 FONT = pg.font.Font("othello/assets/bahnschrift.ttf", 30)
+SMALL_FONT = pg.font.Font("othello/assets/bahnschrift.ttf", 18)
 MENU_BACKGROUND = pg.image.load("othello/assets/othello_menu_background_blurred.jpg")
+
+BUTTON = pg.image.load("othello/assets/button_rect.png")
+BUTTON_SMALL_TEXT = pg.image.load("othello/assets/small_text_rect.png")
+BUTTON_SMALL_TEXT_DISABLED = pg.image.load("othello/assets/small_text_rect_disabled.png")
+BUTTON_TEXT_MENU = pg.image.load("othello/assets/text_menu_rect.png")
 
 pg.display.set_caption(NAME)
 pg.display.set_icon(pg.image.load("othello/assets/white_piece.png"))
 screen = pg.display.set_mode(SIZE)
-
 
 
 def main_menu():
@@ -33,11 +38,11 @@ def main_menu():
         MENU_TEXT = FONT.render("Othello, creado por Fran y Marco", True, BLACK)
         MENU_RECT = MENU_TEXT.get_rect(center=(gc.SCREEN_WIDTH // 2,100))
         MOUSE_POS = pg.mouse.get_pos()
-        PLAY_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
+        PLAY_BUTTON = Button(image=BUTTON, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
                              text_input="PLAY", font=FONT, base_color=BLACK, hovering_color=WHITE)
-        OPTIONS_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 100),
+        OPTIONS_BUTTON = Button(image=BUTTON, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 100),
                              text_input="OPTIONS", font=FONT, base_color=BLACK, hovering_color=WHITE)
-        QUIT_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
+        QUIT_BUTTON = Button(image=BUTTON, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
                              text_input="QUIT", font=FONT, base_color=BLACK, hovering_color=WHITE)
         
         screen.blit(MENU_BACKGROUND, (-200,0))
@@ -73,31 +78,58 @@ def options_menu():
         OPTIONS_TEXT = FONT.render("Here you can change the options", True, BLACK)
         OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(gc.SCREEN_WIDTH // 2,100))
         MOUSE_POS = pg.mouse.get_pos()
-        # MODE_BUTTON = Button(image=pg.image.load("othello/assets/text_menu_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
-        #                      text_input=f"CHANGE MODE: {parse_mode(gc.MODE)}", font=FONT, base_color=BLACK, hovering_color=WHITE)
-        TRAINING_DATA_BUTTON = Button(image=pg.image.load("othello/assets/text_menu_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 100),
+        PLAYER_1_BUTTON = Button(image=BUTTON_SMALL_TEXT, pos=(gc.SCREEN_WIDTH // 2 - 150, gc.SCREEN_HEIGHT // 2 - 45),
+                             text_input=f"PLAYER 1: {parse_player_mode(gc.PLAYER_1)}", font=FONT, base_color=BLACK, hovering_color=WHITE)
+        PLAYER_2_BUTTON = Button(image=BUTTON_SMALL_TEXT, pos=(gc.SCREEN_WIDTH // 2 + 150, gc.SCREEN_HEIGHT // 2 - 45),
+                             text_input=f"PLAYER 2: {parse_player_mode(gc.PLAYER_2)}", font=FONT, base_color=BLACK, hovering_color=WHITE)
+        if gc.PLAYER_1 == gc.PlayerMode(2):
+            button1 = BUTTON_SMALL_TEXT
+            hover1 = WHITE
+        else: 
+           button1 = BUTTON_SMALL_TEXT_DISABLED
+           hover1 = BLACK
+        AGENT_1_BUTTON = Button(image=button1, pos=(gc.SCREEN_WIDTH // 2 -  150, gc.SCREEN_HEIGHT // 2 ),
+                            text_input=f"{parse_agent_mode(gc.AGENT_1_NEURAL_NETWORK )}", font=SMALL_FONT, base_color=BLACK, hovering_color=hover1)
+        if gc.PLAYER_2 == gc.PlayerMode(2):
+            button2 = BUTTON_SMALL_TEXT
+            hover2 = WHITE
+        else: 
+           button2 = BUTTON_SMALL_TEXT_DISABLED
+           hover2 = BLACK
+        AGENT_2_BUTTON = Button(image=button2, pos=(gc.SCREEN_WIDTH // 2 + 150, gc.SCREEN_HEIGHT // 2 ),
+                            text_input=f"{parse_agent_mode(gc.AGENT_2_NEURAL_NETWORK )}", font=SMALL_FONT, base_color=BLACK, hovering_color=hover2)
+        TRAINING_DATA_BUTTON = Button(image=BUTTON_TEXT_MENU, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 100),
                              text_input=f"GENERATE TRAINING DATA: {gc.GENERATE_TRAINING_DATA}", font=FONT, base_color=BLACK, hovering_color=WHITE)
-        MENU_BUTTON = Button(image=pg.image.load("othello/assets/button_rect.png"), pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
+        MENU_BUTTON = Button(image=BUTTON, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2 + 200),
                              text_input="MENU", font=FONT, base_color=BLACK, hovering_color=WHITE)
         
         screen.blit(MENU_BACKGROUND, (-200,0))
         screen.blit(pg.image.load("othello/assets/text_menu_rect.png"), (gc.SCREEN_WIDTH // 12, 75))
         screen.blit(OPTIONS_TEXT, OPTIONS_RECT)
         
-        # for button in [MODE_BUTTON, TRAINING_DATA_BUTTON, MENU_BUTTON]:
-        #     button.changeColor(MOUSE_POS)
-        #     button.update(screen)
         
-        for button in [TRAINING_DATA_BUTTON, MENU_BUTTON]:
-            button.changeColor(MOUSE_POS)
+        for button in [PLAYER_1_BUTTON, PLAYER_2_BUTTON, AGENT_1_BUTTON, AGENT_2_BUTTON,TRAINING_DATA_BUTTON, MENU_BUTTON]:
+            if button is AGENT_1_BUTTON and gc.PLAYER_1 != gc.PlayerMode(2):
+                button.changeColor(MOUSE_POS)
+            elif button is AGENT_2_BUTTON and gc.PLAYER_2 != gc.PlayerMode(2):
+                button.changeColor(MOUSE_POS)
+            else:
+                button.changeColor(MOUSE_POS)
             button.update(screen)
 
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
-                # if MODE_BUTTON.checkForInput(MOUSE_POS):
-                #     change_mode()
+                if PLAYER_1_BUTTON.checkForInput(MOUSE_POS):
+                    change_player_mode("PLAYER_1")
+                if PLAYER_2_BUTTON.checkForInput(MOUSE_POS):
+                    change_player_mode("PLAYER_2")
+                if gc.PLAYER_1 == gc.PlayerMode(2):
+                    if AGENT_1_BUTTON.checkForInput(MOUSE_POS):
+                        change_agent_mode("AGENT_1_NEURAL_NETWORK", "PLAYER_1")
+                if AGENT_2_BUTTON.checkForInput(MOUSE_POS):
+                    change_agent_mode("AGENT_2_NEURAL_NETWORK", "PLAYER_2")
                 if TRAINING_DATA_BUTTON.checkForInput(MOUSE_POS):
                     change_generate_training_data()
                 if MENU_BUTTON.checkForInput(MOUSE_POS):
@@ -155,7 +187,7 @@ def play_game():
             put_human_piece(board, clic_position)
             last_move_time
         elif mode == gc.PlayerMode(1) and current_time - last_move_time >= gc.BOT_MOVE_TIME:
-            put_bot_piece(board, agent)
+            put_bot_piece(board)
             last_move_time = pg.time.get_ticks()
         elif mode == gc.PlayerMode(2) and not agent.is_thinking:
             agent.is_thinking = True
@@ -170,7 +202,7 @@ def put_human_piece(board,pos):
     row, col = get_row_col_from_mouse(pos)
     board.put_piece(row, col)
 
-def put_bot_piece(board, agent):
+def put_bot_piece(board):
     if not board.possible_movements:
         return
     row, col = random.choice(board.possible_movements)
@@ -201,26 +233,43 @@ def get_color_from_rgb(rgb_color):
         res = "White"
     return res 
 
-# def change_mode():
-#     if gc.MODE == gc.MODE.HUMAN_VS_HUMAN:
-#         gc.MODE = gc.MODE.HUMAN_VS_AGENT
-#     elif gc.MODE == gc.MODE.HUMAN_VS_AGENT:
-#         gc.MODE = gc.MODE.AGENT_VS_AGENT
-#     else:
-#         gc.MODE = gc.MODE.HUMAN_VS_HUMAN
-
 def change_generate_training_data():
     gc.GENERATE_TRAINING_DATA = not gc.GENERATE_TRAINING_DATA
 
-# def parse_mode(mode):
-#     res = "Unknown"
-#     match mode:
-#         case gc.MODE.HUMAN_VS_HUMAN:
-#             res = "Human vs Human"
-#         case gc.MODE.HUMAN_VS_AGENT:
-#             res = "Human vs Agent"
-#         case gc.MODE.AGENT_VS_AGENT:
-#             res = "Agent vs Agent"
-#     return res
+def parse_player_mode(player_mode):
+    res = player_mode.name.replace('_', ' ').title()
+    return res
+
+def change_player_mode(player_name):
+    current_mode = getattr(gc, player_name)
+    new_mode = gc.PlayerMode((current_mode.value + 1) % 3)
+    setattr(gc, player_name, new_mode)
+    return new_mode
+
+def parse_agent_mode(agent):
+    res = "Unknown"
+    if agent is None:
+        res= "UCT without Neural Network"
+    else :
+        res = agent.name.replace('_', ' ').title()
+    return res
+
+def change_agent_mode(agent, player_name): # Descomentar cuando se implemente la red neuronal
+    pass
+    # current_mode = getattr(gc, player_name)
+    # if current_mode != gc.PlayerMode(2):
+    #     return
+    # current_agent = getattr(gc, agent)
+    # if current_agent is None:
+    #     new_agent = gc.NeuralNetwork(0)
+    # else:
+    #     current_agent = getattr(gc, agent)
+    #     if current_agent.value == len(gc.NeuralNetwork) - 1 :
+    #         new_agent = None
+    #     else:
+    #         new_agent = gc.NeuralNetwork((current_agent.value + 1))
+    # setattr(gc, agent, new_agent)
+    # return new_agent
+    
 
 main_menu()
