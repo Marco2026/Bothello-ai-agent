@@ -1,5 +1,5 @@
 from .colors import WHITE, BLACK
-from .game_config import ROWS, COLS
+from .game_config import ROWS, COLS, SIMULATION_MODE
 import csv
 import os
 from pathlib import Path
@@ -43,7 +43,7 @@ def last_move_formatter(player_winner):
         for move in moves:
             f.write(parse_move(move))
 
-    os.remove(TEMP_FILE)
+    if not SIMULATION_MODE: os.remove(TEMP_FILE)
 
 def get_player_winner(white_pieces, black_pieces):
     res = None
