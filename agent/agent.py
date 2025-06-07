@@ -1,6 +1,3 @@
-import random
-import threading
-import time
 from .montecarlo_tree_search import uct_search
 from .training.neural_network import OthelloNet
 
