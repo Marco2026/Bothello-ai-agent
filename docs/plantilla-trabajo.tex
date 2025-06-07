@@ -47,12 +47,12 @@
   
   \and
   
-  \IEEEauthorblockN{Nombre y apellidos alumno 2}
+  \IEEEauthorblockN{Francisco Gago Vázquez}
   \IEEEauthorblockA{
     \textit{Dpto. Ciencias de la Computación e Inteligencia Artificial}\\
     \textit{Universidad de Sevilla}\\
     Sevilla, España\\
-    Correos electrónicos UVUS y de contacto (si distinto)}
+    fragagvaz@alum.us.es}
 }
 
 \maketitle
@@ -129,8 +129,11 @@ también trabajos relacionados, si los hay.
 Durante la realización del proyecto hemos utilizado dos técnicas principales:
 el algoritmo de búsqueda en árboles de Monte Carlo (MCTS) y el modelo de Inteligencia
 artificial basado en aprendizaje supervisado de las redes neuronales, tal y como se ha
-utilizado en proyectos similares con anterioridad, por ejemplo en juegos como el ``Go''~\cite{b10}
-
+utilizado en proyectos similares con anterioridad, por ejemplo en juegos de mesa como el 
+``Go''~\cite{b10} parece que esta aproximación es la que mejor funciona debido a la gran 
+complejidad que posee el juego y que por tanto hace imposible la búsqueda de un camino
+completamente óptimo como podría intentar una aproximación con el algoritmo MiniMax con
+poda alfa-beta.
 
 \subsection{Métodos empleados}
 
@@ -138,6 +141,10 @@ Describir aquí los métodos y técnicas empleadas (búsqueda en espacio de
 estados, algoritmos genéticos, redes bayesianas, técnicas de clasificación,
 redes neuronales, etc.). Si es necesario, separarlos en distintas subsecciones
 dentro de Antecedentes.
+
+Nuestra aproximación para crear un agente capaz de hacer movimientos de forma estratégica
+a lo largo de la partida de Otelo, se basa en el uso del algoritmo de búsqueda en árboles
+de Monte Carlo (MCTS) con un enfoque Upper Confidence Bound Tree (UCT).
 
 Se pueden usar listas por puntos como sigue:
 \begin{itemize}
@@ -282,6 +289,49 @@ trabajo, con los experimentos y resultados. Seguidamente, uno o dos párrafos
 con conclusiones. Se suele dedicar un párrafo final con ideas de mejora y
 trabajo futuro.
 
+\section{Uso de la IA generativa}
+
+Durante el transcurso del proyecto, nos propusimos utilizar la Inteligencia
+Artificial Generativa para cuestiones realmente necesarias, enfocando nuestras
+fuentes a la hora de aprender a realizar cada una de las partes del trabajo en
+fuentes de Internet (tutoriales, páginas web, documentación de librerías, etc.)
+y en las lecturas recomendadas por el profesor evaluador del trabajo. Todas estas 
+fuentes están incluidas dentro de la bibliografía.
+
+En cuanto a los prompts utilizados (todos a ChatGPT), fueron los siguientes:
+
+\begin{itemize}
+\item Quiero hacer un juego en pygame, y el tablero consiste de cuadrados 
+separados por lineas negras. Me preguntaba cual podria ser la mejor forma 
+de recrear el tablero, si usar un asset verde del color del tablero y pintar 
+de alguna forma las lineas
+\item Crea una imagen de un asset para piezas de Reversi o Otelo, quiero una 
+pieza blanca y una pieza negra en alta resolucion sobre un fondo verde sólido, 
+para posteriormente recortarlas
+\item Quiero modificar el valor de una constante que defino en otro archivo 
+en mi juego de pygame en python. La importo a mi clase principal y cuando quiero 
+cambiar su valor, obtengo lo siguiente: \\ \\ UnboundLocalError: cannot access 
+local variable 'MODE' where it is not associated with a value
+\item Estoy realizando un algoritmo basado en monte carlo tree search para 
+jugar a un juego de mesa. Lo que no entiendo es cómo aprende montecarlo. Sé 
+que va actualizando los nodos y guardando los valores, pero mi duda va hacia 
+la implementación, ya que si lo guardo en memoria, cuando acabe la partida 
+perdería toda esa información, por lo que no sé si esa información debería 
+almacenarse de algún modo y, de ser así, cómo sería.
+\item Estoy teniendo problemas con esta clase en la que quiero implementar el 
+metodo de busqueda de montecarlo en arboles, creo que me he confundido con la 
+diferencia entre nodo y estado, te adjunto la clase.
+\item Teniendo en cuenta lo que me dijiste, tengo algún problema con la clase 
+Board, ya que a veces se ejecuta el tablero desde el punto de vista del agente 
+y otras veces se ejecuta desde el punto de vista de la persona que hace el movimiento. 
+He tenido varios problemas con el constructor, ya que a veces inicializa bien 
+los valores, pero cuando quiero usar la clase con montecarlo tengo problemas. 
+Te adjunto la clase.
+\item Te voy a enviar una red neuronal. La idea es que un agente la llame para 
+que haga predicciones, pero no se si esta es la forma correcta de hacerlo 
+(organización de código, tener cuidado en que si hay dos agentes no se sobreescriban 
+los datos de ambos objetos, etc)
+\end{itemize}
 
 \begin{thebibliography}{00}
 \bibitem{b1} Documentación de Pygame. \\ Disponible en: https://www.pygame.org/docs/
@@ -294,8 +344,7 @@ trabajo futuro.
 \bibitem{b8} S. J. Russell and P. Norvig, ``Adversarial Search and Games'' in \textit{Artificial intelligence: a modern approach}, Fourth edition. Hoboken, NJ: Pearson, 2021, pp. 146-173
 \bibitem{b9} C. B. Browne, E. Powley, D. Whitehouse, S. M. Lucas, P. I. Cowling, P. Rohlfshagen, S. Tavener, D. Perez, S. Samothrakis and S. Colton: ``A survey of Monte Carlo Tree Search Methods", \textit{IEEE Transactions on Computational Intelligence and AI in Games}, vol. 4, no. 1, pp. 1-8, 2012, doi: 10.1109/TCIAIG.2012.2186810.
 \bibitem{b10} D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. van den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam, M. Lanctot, S. Dieleman, D. Grewe, J. Nham, N. Kalch-brenner, I. Sutskever, T. Lillicrap, M. Leach, K. Kavukcuoglu, T. Graepel, and D. Hassabis, “Mastering the game of Go with deep neural networks and tree search,” Nature, vol. 529, no. 7587, pp. 484–489, 2016, doi: 10.1038/nature16961.
-\bibitem{b11} 
+\bibitem{b11} D. Silver, J. Schrittwieser, K. Simonyan, I. Antonoglou, A. Huang, A. Guez, T. Hubert, L. Baker, M. Lai, A. Bolton, Y. Chen, T. Lillicrap, F. Hui, L. Sifre, G. van den Driessche, T. Graepel, and D. Hassabis, “Mastering the game of Go, Chess, and Shogi by self-play with a general reinforcement learning algorithm,” arXiv preprint, arXiv:1712.01815, 2017. arXiv:1712.01815.
 \end{thebibliography}
-
 
 \end{document}
