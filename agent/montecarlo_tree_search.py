@@ -134,7 +134,7 @@ def next_state(state, action):
 def calculate_upper_confidence_bound(node, parent_visits, constant_c):
     if node.visits == 0: 
         return float("inf")
-    return node.calculate_average_value() + 2 * constant_c * math.sqrt(math.log(parent_visits) / node.visits)
+    return node.calculate_average_value() + 2 * constant_c * math.sqrt(( 2 * math.log(parent_visits)) / node.visits)
 
 def generate_time_countdown(time_to_search):
     return time.time(), time.time() + time_to_search
