@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 import threading
 import time
 import pygame as pg
@@ -7,6 +9,7 @@ import othello.game_config as gc
 from othello.colors import BLACK, WHITE
 from agent.agent import Agent
 from othello.button import Button
+from othello.training_data_generator import delete_all_temp_csv
 
 pg.init()
 pg.font.init()
@@ -42,7 +45,7 @@ def main_menu():
         MOUSE_POS = pg.mouse.get_pos()
         PLAY_BUTTON = Button(image=BUTTON_MENU, pos=(gc.SCREEN_WIDTH // 2, gc.SCREEN_HEIGHT // 2),
                              text_input="PLAY", font=FONT, base_color=BLACK, hovering_color=WHITE)
-        if gc.PLAYER_2 == gc.PlayerMode(0) or gc.PLAYER_1 == gc.PlayerMode(0):
+        if gc.PLAYER_2 == gc.PlayerMode(0) or gc.PLAYER_1 == gc.PlayerMode(0) or not  gc.GENERATE_TRAINING_DATA:
             button = BUTTON_MENU_DISABLED
             hover = BLACK
         else: 
@@ -62,7 +65,7 @@ def main_menu():
         for button in [PLAY_BUTTON, SIMULATION_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
             button.changeColor(MOUSE_POS)
             button.update(screen)
-            if button is SIMULATION_BUTTON and not (gc.PLAYER_2 == gc.PlayerMode(0) or gc.PLAYER_1 == gc.PlayerMode(0)):
+            if button is SIMULATION_BUTTON and not ( gc.PLAYER_2 == gc.PlayerMode(0) or gc.PLAYER_1 == gc.PlayerMode(0) or not gc.GENERATE_TRAINING_DATA):
                 button.changeColor(MOUSE_POS)
 
         for event in pg.event.get():
@@ -70,6 +73,7 @@ def main_menu():
                 running = False
             if event.type == pg.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MOUSE_POS):
+                    setattr(gc,"SIMULATION_MODE", False)
                     play_game()
                 if SIMULATION_BUTTON.checkForInput(MOUSE_POS):
                     setattr(gc,"SIMULATION_MODE", True)
@@ -80,6 +84,8 @@ def main_menu():
                     running = False
 
         pg.display.flip()
+
+    delete_all_temp_csv()
     pg.quit()
 
 def options_menu():
@@ -211,6 +217,14 @@ def play_game():
             last_move_time = pg.time.get_ticks()
         
         if board.game_finished and gc.SIMULATION_MODE:
+            while Path(board.temp_csv_file).exists():
+                time.sleep(0.05)
+                try:
+                    os.remove(board.temp_csv_file)
+                    print(f"Deleted file: {board.temp_csv_file}")
+                except OSError as e:
+                    print(f"Error deleting file {board.temp_csv_file}: {e}")
+                
             running = False
 
         pg.display.flip()
@@ -291,10 +305,11 @@ def change_agent_mode(agent, player_name): # Descomentar cuando se implemente la
     # return new_agent
     
 def simulate_games (num_games = gc.SIMULATIONS):
+
     if gc.PLAYER_1 == gc.PlayerMode(0) or gc.PLAYER_2 == gc.PlayerMode(0):
         return
     for i in range(num_games):
-        print(f"Ejecutando partida {i+1} de {num_games}")
+        print(f"Simulating game {i+1} / {num_games}")
         play_game()
    
 
