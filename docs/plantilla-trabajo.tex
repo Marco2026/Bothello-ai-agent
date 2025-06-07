@@ -60,12 +60,14 @@
 
 % Resumen
 \begin{abstract}
-  Este trabajo tiene como objetivo desarrollar un agente dotado de Inteligencia
-  artificial para el juego de mesa de ``Otelo'' y estudiar su efectividad en el 
-  juego. Para ello, se han empleado herramientas modernas de inteligencia artificial,
-   en concreto la técnica de aprendizaje por refuerzo de búsqueda en árboles de
-    Montecarlo (MCTS) utilizando un enfoque de Upper Confidence Bound Tree (UCT)
-   y la técnica de aprendizaje supervisado de Red Neuronal.
+  Este trabajo tiene como objetivo construir un agente dotado de Inteligencia
+  artificial para el juego de mesa de ``Otelo'', el cual sea capaz de tomar
+  decisiones estratégicas y estudiar su efectividad en el juego. Para ello,
+  se han empleado herramientas modernas de inteligencia artificial,
+  en concreto una combinación entre el algoritmo de búsqueda en árboles de
+  Montecarlo (MCTS) utilizando un enfoque de Upper Confidence Bound Tree (UCT)
+  combinado con la adición de aprendizaje supervisado por el uso de una Red Neuronal
+  que es capaz de inferir la probabilidad de victoria dada una posición.
 
   Tras haber desarrollado agentes de distintos tipos, y haber estudiado su porcentaje
   de victorias respecto al de los otros modelos, hemos llegado a la conclusión de que
@@ -88,9 +90,36 @@ la asignatura ``Inteligencia Artificial'' para la evaluación del mismo, por lo 
 de las técnicas y algoritmos vistos en clase para resolver el problema planteado
 por el profesor. El trabajo está centrado en el universo del juego de mesa ``Otelo'',
 el cual hemos modelado en el lenguaje de programación Python con ayuda de la librería
-``Pygame''~\cite{b1}, apoyándonos a su vez en tutoriales de YouTube para realizar
-el código tanto del juego~\cite{b2}-~\cite{b4} como de la interfaz en Pygame
+``Pygame''~\cite{b1}-~\cite{b2} apoyándonos en tutoriales de YouTube para realizar el código tanto
+del juego~\cite{b3}-~\cite{b5} como del menú~\cite{b6}-~\cite{b7}. Una vez realizado el
+código tanto del juego como del menú, ya podíamos jugar una persona contra otra persona, pero,
+para acercarnos a nuestro objetivo de incluir agentes inteligentes, desarrollamos primero
+un bot que realizara jugadas aleatorias y a su vez desarrollamos la lógica necesaria para
+que al jugar contra el bot, la partida quedara registrada en un fichero csv con el texto
+completamente preparado con vista a entrenar una red neuronal en el futuro.
 
+Una vez teníamos el bot y el sistema de generación de datos, nos informamos~\cite{b8} sobre cómo
+deberíamos implementar un agente para cumplir con el objetivo de atacar un problema de
+búsqueda adversaria en un entorno competitivo, en concreto, en un juego determinista, de dos jugadores,
+por turnos, con información perfecta y de suma cero (es decir, lo que es bueno para un jugador es un
+inconveniente para su oponente).
+
+Para crear el agente final, primero creamos un agente sin aprendizaje supervisado basándonos en el
+algoritmo de búsqueda en árboles de Montecarlo (MCTS). Para construirlo, nos basamos en el pseudocódigo
+descrito en la investigación de Cameron B. Browne et al. sobre los métodos de búsqueda en árbol de
+Monte Carlo~\cite{b9} en el que se equilibran las fases de exploración de nodos que no tienen una fiabilidad
+alta sobre su resultado con la de explotación de nodos que sí han dado buenos resultados anteriormente.
+
+Por último, una vez terminamos el agente que implementa el algoritmo de Monte Carlo funcionando,
+lo pusimos a jugar contra sí mismo para generar partidas que alimentaran a la futura red neuronal y
+así poder usarla para sustituir el resultado que nos da la red dado un estado del tablero por la búsqueda
+por defecto que realiza el algoritmo de Monte Carlo.
+
+A lo largo del resto del documento, se describe el transcurso del proyecto, definiendo las técnicas
+empleadas y los trabajos relacionados en los preliminares, los métodos y algoritmos utilizados en la
+sección de metodología, los resultados obtenidos de la aplicación de algoritmos y métodos en la sección
+de resultados, el aprendizaje obtenido de los resultados y su estudio en la sección de conclusiones y
+por último las secciones de bibliografía y consultas a IA generativa.
 
 \section{Preliminares}
 
@@ -251,15 +280,16 @@ trabajo futuro.
 
 \begin{thebibliography}{00}
 \bibitem{b1} Documentación de Pygame. \\ Disponible en: https://www.pygame.org/docs/
-\bibitem{b2} Tutorial para hacer las damas en Pygame (Parte 1). Disponible en:\\ https://www.youtube.com/watch?v=vnd3RfeG3NM\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3
-\bibitem{b3} Tutorial para hacer las damas en Pygame (Parte 2). Disponible en:\\ https://www.youtube.com/watch?v=LSYj8GZMjWY\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3\&index=2
-\bibitem{b4} Tutorial para hacer las damas en Pygame (Parte 3). Disponible en:\\ https://www.youtube.com/watch?v=\_kOXGzkbnps\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3\&index=3
-\bibitem{b5} 
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
-\bibitem{b8} C. B. Browne, E. Powley, D. Whitehouse, S. M. Lucas, P. I. Cowling, P. Rohlfshagen, S. Tavener, D. Perez, S. Samothrakis and S. Colton: ``A survey of Monte Carlo Tree Search Methods", \textit{IEEE Transactions on Computational Intelligence and AI in Games}, vol. 4, no. 1, pp. 1-43 , 2012, doi: 10.1109/TCIAIG.2012.2186810.
-\bibitem{b9} D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. van den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam, M. Lanctot, S. Dieleman, D. Grewe, J. Nham, N. Kalch-brenner, I. Sutskever, T. Lillicrap, M. Leach, K. Kavukcuoglu, T. Graepel, and D. Hassabis, “Mastering the game of Go with deep neural networks and tree search,” Nature, vol. 529, no. 7587, pp. 484–489, 2016, doi: 10.1038/nature16961.
-\bibitem{b10} https://es.wikibooks.org/wiki/Manual\_de\_LaTeX
+\bibitem{b2} Tutorial sobre Pygame. \\ Disponible en: https://pygame.readthedocs.io/en/latest/index.html
+\bibitem{b3} Tutorial para hacer las damas en Pygame (Parte 1). Disponible en:\\ https://www.youtube.com/watch?v=vnd3RfeG3NM\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3
+\bibitem{b4} Tutorial para hacer las damas en Pygame (Parte 2). Disponible en:\\ https://www.youtube.com/watch?v=LSYj8GZMjWY\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3\&index=2
+\bibitem{b5} Tutorial para hacer las damas en Pygame (Parte 3). Disponible en:\\ https://www.youtube.com/watch?v=\_kOXGzkbnps\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3\&index=3
+\bibitem{b6} Tutorial para hacer el menú en Pygame. Disponible en:\\ https://www.youtube.com/watch?v=GMBqjxcKogA
+\bibitem{b7} Código del componente ``Button''. Disponible en:\\ https://github.com/baraltech/Menu-System-PyGame/blob/main/button.py
+\bibitem{b8} S. J. Russell and P. Norvig, ``Adversarial Search and Games'' in \textit{Artificial intelligence: a modern approach}, Fourth edition. Hoboken, NJ: Pearson, 2021, pp. 146-173
+\bibitem{b9} C. B. Browne, E. Powley, D. Whitehouse, S. M. Lucas, P. I. Cowling, P. Rohlfshagen, S. Tavener, D. Perez, S. Samothrakis and S. Colton: ``A survey of Monte Carlo Tree Search Methods", \textit{IEEE Transactions on Computational Intelligence and AI in Games}, vol. 4, no. 1, pp. 1-8, 2012, doi: 10.1109/TCIAIG.2012.2186810.
+\bibitem{b10} D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. van den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam, M. Lanctot, S. Dieleman, D. Grewe, J. Nham, N. Kalch-brenner, I. Sutskever, T. Lillicrap, M. Leach, K. Kavukcuoglu, T. Graepel, and D. Hassabis, “Mastering the game of Go with deep neural networks and tree search,” Nature, vol. 529, no. 7587, pp. 484–489, 2016, doi: 10.1038/nature16961.
+\bibitem{b11} Documentación de LaTeX. Disponible en:\\ https://es.wikibooks.org/wiki/Manual\_de\_LaTeX
 \end{thebibliography}
 
 
