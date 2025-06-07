@@ -1,5 +1,6 @@
+import time
 from .colors import WHITE, BLACK
-from .game_config import ROWS, COLS
+from .game_config import ROWS, COLS, SIMULATION_MODE
 import csv
 import os
 from pathlib import Path
@@ -8,42 +9,46 @@ LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n"]
 NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
 
 FILE = "agent/training/training_data.csv"
-TEMP_FILE = "agent/training/training_data_for_current_game.csv"
 
-def training_data_initializer():
+def training_data_initializer(temp_file):
     if not Path(FILE).exists():
-        f = open(FILE, "w")
-        f.write(parse_state() + "current_player_won" + "\n")
-        f.close()
-    if Path(TEMP_FILE).exists(): os.remove(TEMP_FILE)
-    with open(TEMP_FILE, mode="a", newline="\n") as f:
-        f.write(parse_state() + "current_player_won" + "\n")
+        with open(FILE, "w") as f:
+            f.write(parse_state() + "current_player_won\n")
+            print(f"File {FILE} updated with the info of the file {temp_file}")
 
-def training_data_generator(state):
+    if Path(temp_file).exists():
+        os.remove(temp_file)
+
+    with open(temp_file, mode="a", newline="\n") as f:
+        f.write(parse_state() + "current_player_won\n")
+
+def training_data_generator(state, temp_file):
     board = parse_board(state.board)
-    current_player = str(state.current_player)  
-    
-    with open(TEMP_FILE, mode="a", newline="\n") as f:
+    current_player = str(state.current_player)
+
+    with open(temp_file, mode="a", newline="\n") as f:
         f.write(board + current_player + "\n")
+        
 
     pieces = state.white_pieces + state.black_pieces
     if pieces == ROWS * COLS:
         player_winner = get_player_winner(state.white_pieces, state.black_pieces)
-        last_move_formatter(player_winner)
-        
-def last_move_formatter(player_winner):
+        last_move_formatter(player_winner, temp_file)
+
+
+def last_move_formatter(player_winner, temp_file):
     moves = []
-    with open(TEMP_FILE, mode="r", encoding="UTF-8", newline="\n") as f:
+    with open(temp_file, mode="r", encoding="UTF-8", newline="\n") as f:
         lector = csv.reader(f, delimiter=";")
         next(lector)
         for line in lector:
             moves.append((line[:-1], parse_winner(line[-1], player_winner)))
-    
+
     with open(FILE, mode="a", newline="\n") as f:
         for move in moves:
             f.write(parse_move(move))
 
-    os.remove(TEMP_FILE)
+
 
 def get_player_winner(white_pieces, black_pieces):
     res = None
@@ -85,3 +90,18 @@ def parse_state():
 
 def parse_move(move):
     return ';'.join(move[0]) + ";" + move[1] + "\n"
+
+
+def delete_all_temp_csv():
+    temp_folder = Path("agent/training/temp")
+    if not temp_folder.exists():
+        return
+    
+    for file in temp_folder.glob("*.csv"):
+        os.remove(file)
+
+
+            
+
+
+

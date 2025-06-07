@@ -1,10 +1,12 @@
+import uuid
 import pygame as pg
 import copy
 import time
 from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, GENERATE_TRAINING_DATA
 from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
-from .training_data_generator import training_data_generator, training_data_initializer
+from .training_data_generator import training_data_generator
+
 
 DIRECTIONS = {
     'right': (1, 0),
@@ -18,14 +20,13 @@ DIRECTIONS = {
 }
 
 class Board:
-
+    
     def __init__(self, board=None, current_player=BLACK):
         self.current_player = current_player
         if board is None:
             self.build_initial_board()
         else:
             self.load_from_board(board)
-
         self.get_possible_movements()
         if self.possible_movements == []:
             self.change_current_player()
@@ -50,7 +51,7 @@ class Board:
         self.winner = None
         self.is_original = True
         if GENERATE_TRAINING_DATA and self.is_original:
-            training_data_initializer()
+            self.temp_csv_file = f"agent/training/temp/{time.time()}.csv"
 
     def load_from_board(self, board_to_copy):
         self.board = []
@@ -70,7 +71,6 @@ class Board:
         self.game_finished = False
         self.winner = None
         self.is_original = False
-
         self.update_number_of_pieces()
         self.turn = self.white_pieces + self.black_pieces - 4
 
@@ -89,6 +89,7 @@ class Board:
         new_board.white_pieces = self.white_pieces
         new_board.black_pieces = self.black_pieces
         new_board.turn = self.turn
+        new_board.temp_csv_file = None
         if self.game_finished:
             new_board.winner = self.winner
             new_board.current_player = None
@@ -106,7 +107,7 @@ class Board:
             self.update_number_of_pieces()
             self.turn += 1
             if GENERATE_TRAINING_DATA and self.is_original:
-                training_data_generator(self)
+                training_data_generator(self, self.temp_csv_file)
 
     def change_current_player(self):    
         if self.current_player == WHITE: self.current_player = BLACK 

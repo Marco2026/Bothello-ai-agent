@@ -8,12 +8,24 @@ ROWS = 8
 COLS = 8
 SQUARE_SIZE = BOARD_WIDTH // COLS
 
-class GameMode(Enum):
-    HUMAN_VS_HUMAN = 0
-    HUMAN_VS_AGENT = 1
-    AGENT_VS_AGENT = 2
-
-MODE = GameMode(2)
-AGENT_MOVE_TIME = 50
-USE_NEURAL_NETWORK = True
+USE_NEURAL_NETWORK = False
 GENERATE_TRAINING_DATA = True
+
+class PlayerMode(Enum):
+    HUMAN = 0
+    BOT = 1
+    AGENT = 2
+
+class NeuralNetwork(Enum):
+    NEURAL_NETWORK_STARTER = 0  
+    NEURAL_NETWORK_IMPROVED = 1  
+
+PLAYER_1 = PlayerMode(1)
+PLAYER_2 = PlayerMode(2)
+
+AGENT_1_NEURAL_NETWORK = None
+AGENT_2_NEURAL_NETWORK = None
+
+BOT_MOVE_TIME = 1 #ms
+SIMULATIONS = 100
+SIMULATION_MODE = False
