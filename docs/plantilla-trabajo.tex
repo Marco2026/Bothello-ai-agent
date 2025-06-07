@@ -47,12 +47,12 @@
   
   \and
   
-  \IEEEauthorblockN{Nombre y apellidos alumno 2}
+  \IEEEauthorblockN{Francisco Gago Vázquez}
   \IEEEauthorblockA{
     \textit{Dpto. Ciencias de la Computación e Inteligencia Artificial}\\
     \textit{Universidad de Sevilla}\\
     Sevilla, España\\
-    Correos electrónicos UVUS y de contacto (si distinto)}
+    fragagvaz@alum.us.es}
 }
 
 \maketitle
@@ -60,12 +60,14 @@
 
 % Resumen
 \begin{abstract}
-  Este trabajo tiene como objetivo desarrollar un agente dotado de Inteligencia
-  artificial para el juego de mesa de ``Otelo'' y estudiar su efectividad en el 
-  juego. Para ello, se han empleado herramientas modernas de inteligencia artificial,
-   en concreto la técnica de aprendizaje por refuerzo de búsqueda en árboles de
-    Montecarlo (MCTS) utilizando un enfoque de Upper Confidence Bound Tree (UCT)
-   y la técnica de aprendizaje supervisado de Red Neuronal.
+  Este trabajo tiene como objetivo construir un agente dotado de Inteligencia
+  artificial para el juego de mesa de ``Otelo'', el cual sea capaz de tomar
+  decisiones estratégicas y estudiar su efectividad en el juego. Para ello,
+  se han empleado herramientas modernas de inteligencia artificial,
+  en concreto una combinación entre el algoritmo de búsqueda en árboles de
+  Montecarlo (MCTS) utilizando un enfoque de Upper Confidence Bound Tree (UCT)
+  combinado con la adición de aprendizaje supervisado por el uso de una Red Neuronal
+  que es capaz de inferir la probabilidad de victoria dada una posición.
 
   Tras haber desarrollado agentes de distintos tipos, y haber estudiado su porcentaje
   de victorias respecto al de los otros modelos, hemos llegado a la conclusión de que
@@ -82,47 +84,90 @@
 
 \section{Introducción}
 
-En esta sección se dedican varios párrafos para dar el contexto en el que se
-desarrolla el trabajo presentado. Normalmente se va desde lo más general a lo
-más preciso, para englobar el trabajo dentro de un ámbito concreto. Hay que
-recordar que se debe referenciar la información que se consiga de fuentes
-bibliográficas (artículos, libros, capítulos de libros, páginas web, apuntes,
-etc.). Para ello se añade el ítem correspondiente en el apartado de
-referencias, dotándolo de un número, y se añade la referencia al final de la
-frase o párrafo correspondiente~\cite{b1}. Si se realiza en Microsoft Word o
-LibreOffice, se puede hacer uso de \emph{referencias cruzadas} para actualizar
-la numeración de las referencias de forma automática en todo el documento.
+El siguiente trabajo se ha desarrollado en un entorno académico, con el objetivo 
+de mostrar el conocimiento aprendido por los miembros del grupo durante
+la asignatura ``Inteligencia Artificial'' para la evaluación del mismo, por lo que se han empleado algunas
+de las técnicas y algoritmos vistos en clase para resolver el problema planteado
+por el profesor. El trabajo está centrado en el universo del juego de mesa ``Otelo'',
+el cual hemos modelado en el lenguaje de programación Python con ayuda de la librería
+``Pygame''~\cite{b1}-~\cite{b2} apoyándonos en tutoriales de YouTube para realizar el código tanto
+del juego~\cite{b3}-~\cite{b5} como del menú~\cite{b6}-~\cite{b7}. Una vez realizado el
+código tanto del juego como del menú, ya podíamos jugar una persona contra otra persona, pero,
+para acercarnos a nuestro objetivo de incluir agentes inteligentes, desarrollamos primero
+un bot que realizara jugadas aleatorias y a su vez desarrollamos la lógica necesaria para
+que al jugar contra el bot, la partida quedara registrada en un fichero csv con el texto
+completamente preparado con vista a entrenar una red neuronal en el futuro.
 
-Después vienen un par de párrafos para dar un poco más de detalle sobre el
-trabajo realizado. Hay que indicar la problemática o el objetivo que se marca,
-y cómo se ha enfocado la solución propuesta en este trabajo. Finalmente, el
-último párrafo se dedica a comentar la estructura del documento por secciones,
-como el que sigue.
+Una vez teníamos el bot y el sistema de generación de datos, nos informamos~\cite{b8} sobre cómo
+deberíamos implementar un agente para cumplir con el objetivo de atacar un problema de
+búsqueda adversaria en un entorno competitivo, en concreto, en un juego determinista, de dos jugadores,
+por turnos, con información perfecta y de suma cero (es decir, lo que es bueno para un jugador es un
+inconveniente para su oponente).
 
+Para crear el agente final, primero creamos un agente sin aprendizaje supervisado basándonos en el
+algoritmo de búsqueda en árboles de Montecarlo (MCTS). Para construirlo, nos basamos en el pseudocódigo
+descrito en la investigación de Cameron B. Browne et al. sobre los métodos de búsqueda en árbol de
+Monte Carlo~\cite{b9} en el que se equilibran las fases de exploración de nodos que no tienen una fiabilidad
+alta sobre su resultado con la de explotación de nodos que sí han dado buenos resultados anteriormente.
+
+Por último, una vez terminamos el agente que implementa el algoritmo de Monte Carlo funcionando,
+lo pusimos a jugar contra sí mismo para generar partidas que alimentaran a la futura red neuronal y
+así poder usarla para sustituir el resultado que nos da la red dado un estado del tablero por la búsqueda
+por defecto que realiza el algoritmo de Monte Carlo.
+
+A lo largo del resto del documento, se describe el transcurso del proyecto, definiendo las técnicas
+empleadas y los trabajos relacionados en los preliminares, los métodos y algoritmos utilizados en la
+sección de metodología, los resultados obtenidos de la aplicación de algoritmos y métodos en la sección
+de resultados, el aprendizaje obtenido de los resultados y su estudio en la sección de conclusiones y
+por último las secciones de bibliografía y consultas a IA generativa.
 
 \section{Preliminares}
 
 En esta sección se hace una breve introducción de las técnicas empleadas y
 también trabajos relacionados, si los hay.
 
+Durante la realización del proyecto hemos utilizado dos técnicas principales:
+el algoritmo de búsqueda en árboles de Monte Carlo (MCTS) y el modelo de Inteligencia
+artificial basado en aprendizaje supervisado de las redes neuronales, tal y como se ha
+utilizado en proyectos similares con anterioridad, por ejemplo en juegos de mesa como el 
+``Go''~\cite{b10} parece que esta aproximación es la que mejor funciona debido a la gran 
+complejidad que posee el juego y que por tanto hace imposible la búsqueda de un camino
+completamente óptimo como podría intentar una aproximación con el algoritmo MiniMax con
+poda alfa-beta.
 
 \subsection{Métodos empleados}
 
-Describir aquí los métodos y técnicas empleadas (búsqueda en espacio de
-estados, algoritmos genéticos, redes bayesianas, técnicas de clasificación,
-redes neuronales, etc.). Si es necesario, separarlos en distintas subsecciones
-dentro de Antecedentes.
-
-Se pueden usar listas por puntos como sigue:
+Nuestra aproximación para crear un agente capaz de hacer movimientos de forma estratégica
+a lo largo de la partida de Otelo, se basa en el uso del algoritmo de búsqueda en árboles
+de Monte Carlo (MCTS) con un enfoque Upper Confidence Bound Tree (UCT) como método para
+equilibrar la exploración y la explotación. La fórmula de UCT es la siguiente:
+\[
+UCT = \bar{X}_j + 2C_p \sqrt{\frac{2 \ln{n}}{n_j}} 
+\]
+donde:
 \begin{itemize}
-\item Un punto: esto es un ejemplo de una lista.
-\item Otro punto.
+\item $\bar{X}_j$: es la recompensa del nodo $j$ dividida entre la cantidad de veces que 
+ha sido visitado, comprendida en el rango $[0,1]$.
+\item $C_p$: es una constante que permite regular entre el término exploratorio y el término
+explotador de la función UCT.
+\item $n$: es el número de veces que el nodo actual (nodo padre) ha sido visitado.
+\item $n_j$: es el número de veces que el hijo $j$ ha sido visitado.
 \end{itemize}
 
-Por último, se debe hacer un uso correcto de las referencias bibliográficas,
-para que el lector pueda acceder a más información~\cite{b2}. Todas las
-referencias al final del documento deben ser citadas al menos una vez.
-
+La forma en la que $C_p$ sirve para controlar el equilibrio entre exploración y explotación
+es la siguiente:
+\begin{itemize}
+\item $\bar{X}_j$: se corresponde con el término explotador, es decir, cuanto mayor sea la
+recompensa acumulada por entrar al nodo, más probable será que se vuelva a visitar y cuantas
+más veces se haya visitado el nodo, más se favorecerá ir a otros nodos que no se hayan visitado
+tantas veces.
+\item $C_p \sqrt{\frac{2 \ln{n}}{n_j}}$: es el término exploratorio, el cual favorece que se visiten
+nodos que no han sido visitados tantas veces (por lo que no se sabe aún si darán buenas recompensas
+o no). El término disminuye cuanto mayor sea $n_j$ (y, por tanto, se haya explorado ese nodo), mientras
+que el logaritmo del numerador asegura que la exploración decrezca lentamente a medida que se visita al
+padre. La constante, por lo tanto, sirve para controlar la importancia que se le da a la exploración
+frente a la explotación.
+\end{itemize}
 
 \subsection{Trabajo Relacionado}
 
@@ -256,19 +301,64 @@ trabajo, con los experimentos y resultados. Seguidamente, uno o dos párrafos
 con conclusiones. Se suele dedicar un párrafo final con ideas de mejora y
 trabajo futuro.
 
+\section{Uso de la IA generativa}
+
+Durante el transcurso del proyecto, nos propusimos utilizar la Inteligencia
+Artificial Generativa para cuestiones realmente necesarias, enfocando nuestras
+fuentes a la hora de aprender a realizar cada una de las partes del trabajo en
+fuentes de Internet (tutoriales, páginas web, documentación de librerías, etc.)
+y en las lecturas recomendadas por el profesor evaluador del trabajo. Todas estas 
+fuentes están incluidas dentro de la bibliografía.
+
+En cuanto a los prompts utilizados (todos a ChatGPT), fueron los siguientes:
+
+\begin{itemize}
+\item Quiero hacer un juego en pygame, y el tablero consiste de cuadrados 
+separados por lineas negras. Me preguntaba cual podria ser la mejor forma 
+de recrear el tablero, si usar un asset verde del color del tablero y pintar 
+de alguna forma las lineas
+\item Crea una imagen de un asset para piezas de Reversi o Otelo, quiero una 
+pieza blanca y una pieza negra en alta resolucion sobre un fondo verde sólido, 
+para posteriormente recortarlas
+\item Quiero modificar el valor de una constante que defino en otro archivo 
+en mi juego de pygame en python. La importo a mi clase principal y cuando quiero 
+cambiar su valor, obtengo lo siguiente: \\ \\ UnboundLocalError: cannot access 
+local variable 'MODE' where it is not associated with a value
+\item Estoy realizando un algoritmo basado en monte carlo tree search para 
+jugar a un juego de mesa. Lo que no entiendo es cómo aprende montecarlo. Sé 
+que va actualizando los nodos y guardando los valores, pero mi duda va hacia 
+la implementación, ya que si lo guardo en memoria, cuando acabe la partida 
+perdería toda esa información, por lo que no sé si esa información debería 
+almacenarse de algún modo y, de ser así, cómo sería.
+\item Estoy teniendo problemas con esta clase en la que quiero implementar el 
+metodo de busqueda de montecarlo en arboles, creo que me he confundido con la 
+diferencia entre nodo y estado, te adjunto la clase.
+\item Teniendo en cuenta lo que me dijiste, tengo algún problema con la clase 
+Board, ya que a veces se ejecuta el tablero desde el punto de vista del agente 
+y otras veces se ejecuta desde el punto de vista de la persona que hace el movimiento. 
+He tenido varios problemas con el constructor, ya que a veces inicializa bien 
+los valores, pero cuando quiero usar la clase con montecarlo tengo problemas. 
+Te adjunto la clase.
+\item Te voy a enviar una red neuronal. La idea es que un agente la llame para 
+que haga predicciones, pero no se si esta es la forma correcta de hacerlo 
+(organización de código, tener cuidado en que si hay dos agentes no se sobreescriban 
+los datos de ambos objetos, etc)
+\item Puedes explicarme en mayor detalle qué es el upper bound confidence tree
+en el contexto de Monte Carlo Tree Search algorithm?
+\end{itemize}
 
 \begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
-\bibitem{b8} C. B. Browne, E. Powley, D. Whitehouse, S. M. Lucas, P. I. Cowling, P. Rohlfshagen, S. Tavener, D. Perez, S. Samothrakis and S. Colton: ``A survey of Monte Carlo Tree Search Methods", \textit{IEEE Transactions on Computational Intelligence and AI in Games}, vol. 4, no. 1, pp. 1-43 , 2012, doi: 10.1109/TCIAIG.2012.2186810.
-\bibitem{b9} D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. van den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam, M. Lanctot, S. Dieleman, D. Grewe, J. Nham, N. Kalch-brenner, I. Sutskever, T. Lillicrap, M. Leach, K. Kavukcuoglu, T. Graepel, and D. Hassabis, “Mastering the game of Go with deep neural networks and tree search,” Nature, vol. 529, no. 7587, pp. 484–489, 2016, doi: 10.1038/nature16961.
-\bibitem{b10} https://es.wikibooks.org/wiki/Manual\_de\_LaTeX
+\bibitem{b1} Documentación de Pygame. \\ Disponible en: https://www.pygame.org/docs/
+\bibitem{b2} Tutorial sobre Pygame. \\ Disponible en: https://pygame.readthedocs.io/en/latest/index.html
+\bibitem{b3} Tutorial para hacer las damas en Pygame (Parte 1). Disponible en:\\ https://www.youtube.com/watch?v=vnd3RfeG3NM\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3
+\bibitem{b4} Tutorial para hacer las damas en Pygame (Parte 2). Disponible en:\\ https://www.youtube.com/watch?v=LSYj8GZMjWY\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3\&index=2
+\bibitem{b5} Tutorial para hacer las damas en Pygame (Parte 3). Disponible en:\\ https://www.youtube.com/watch?v=\_kOXGzkbnps\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3\&index=3
+\bibitem{b6} Tutorial para hacer el menú en Pygame. Disponible en:\\ https://www.youtube.com/watch?v=GMBqjxcKogA
+\bibitem{b7} Código del componente ``Button''. Disponible en:\\ https://github.com/baraltech/Menu-System-PyGame/blob/main/button.py
+\bibitem{b8} S. J. Russell and P. Norvig, ``Adversarial Search and Games'' in \textit{Artificial intelligence: a modern approach}, Fourth edition. Hoboken, NJ: Pearson, 2021, pp. 146-173
+\bibitem{b9} C. B. Browne, E. Powley, D. Whitehouse, S. M. Lucas, P. I. Cowling, P. Rohlfshagen, S. Tavener, D. Perez, S. Samothrakis and S. Colton: ``A survey of Monte Carlo Tree Search Methods", \textit{IEEE Transactions on Computational Intelligence and AI in Games}, vol. 4, no. 1, pp. 1-8, 2012, doi: 10.1109/TCIAIG.2012.2186810.
+\bibitem{b10} D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. van den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam, M. Lanctot, S. Dieleman, D. Grewe, J. Nham, N. Kalch-brenner, I. Sutskever, T. Lillicrap, M. Leach, K. Kavukcuoglu, T. Graepel, and D. Hassabis, “Mastering the game of Go with deep neural networks and tree search,” Nature, vol. 529, no. 7587, pp. 484–489, 2016, doi: 10.1038/nature16961.
+\bibitem{b11} D. Silver, J. Schrittwieser, K. Simonyan, I. Antonoglou, A. Huang, A. Guez, T. Hubert, L. Baker, M. Lai, A. Bolton, Y. Chen, T. Lillicrap, F. Hui, L. Sifre, G. van den Driessche, T. Graepel, and D. Hassabis, “Mastering the game of Go, Chess, and Shogi by self-play with a general reinforcement learning algorithm,” arXiv preprint, arXiv:1712.01815, 2017. arXiv:1712.01815.
 \end{thebibliography}
-
 
 \end{document}
