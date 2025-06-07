@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import sys
 import threading
 import time
 import pygame as pg
@@ -195,6 +196,7 @@ def play_game():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+                setattr(gc, "SIMULATION_MODE", False)
             if event.type == pg.MOUSEBUTTONDOWN:
                 clic_position = pg.mouse.get_pos()
 
@@ -221,7 +223,8 @@ def play_game():
                 time.sleep(0.05)
                 try:
                     os.remove(board.temp_csv_file)
-                    print(f"Deleted file: {board.temp_csv_file}")
+                    # trash_bin = "\U0001F5D1"
+                    # print(f"{trash_bin} Deleted file: {board.temp_csv_file}")
                 except OSError as e:
                     print(f"Error deleting file {board.temp_csv_file}: {e}")
                 
@@ -304,14 +307,22 @@ def change_agent_mode(agent, player_name): # Descomentar cuando se implemente la
     # setattr(gc, agent, new_agent)
     # return new_agent
     
-def simulate_games (num_games = gc.SIMULATIONS):
-
+def simulate_games (num_games = gc.SIMULATIONS):  
+    tick = "\u2714"
     if gc.PLAYER_1 == gc.PlayerMode(0) or gc.PLAYER_2 == gc.PlayerMode(0):
         return
-    for i in range(num_games):
+    i=0
+    while i< num_games and  gc.SIMULATION_MODE:
         print(f"Simulating game {i+1} / {num_games}")
         play_game()
-    print(f"Simulated {num_games} games successfully.")
-   
+        if gc.SIMULATION_MODE:
+            i += 1
+            print(f"{tick} Game {i} / {num_games} simulated succesfully.")
+    if i == num_games: print(f"{tick} Simulated {num_games} games successfully.")
+    else: 
+        if i<1: plural = "s"
+        else: plural = ""
+        cross = "\u2716"
+        print(f"{cross} Simulation stopped after {i} completed game{plural}.")
 
 main_menu()
