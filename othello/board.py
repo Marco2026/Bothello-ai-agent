@@ -5,7 +5,7 @@ import time
 from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, GENERATE_TRAINING_DATA
 from .colors import BLACK, WHITE, GREEN
 from .piece import Piece
-from .training_data_generator import training_data_generator
+from .training_data_generator import training_data_generator, training_data_initializer
 
 
 DIRECTIONS = {
@@ -52,6 +52,7 @@ class Board:
         self.is_original = True
         if GENERATE_TRAINING_DATA and self.is_original:
             self.temp_csv_file = f"agent/training/temp/{time.time()}.csv"
+            training_data_initializer(self.temp_csv_file)
 
     def load_from_board(self, board_to_copy):
         self.board = []
