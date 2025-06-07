@@ -1,6 +1,5 @@
-import time
 from .colors import WHITE, BLACK
-from .game_config import ROWS, COLS, SIMULATION_MODE
+import othello.game_config as gc
 import csv
 import os
 from pathlib import Path
@@ -8,11 +7,31 @@ from pathlib import Path
 LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n"]
 NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
 
-FILE = "agent/training/training_data.csv"
+
+def parse_filename():
+    if not gc.GENERATE_TRAINING_DATA:
+        return 
+    player_1 = gc.PLAYER_1.name
+    agent_1_type = ""
+    if gc.PLAYER_1 == gc.PlayerMode.AGENT:
+        if gc.AGENT_1_NEURAL_NETWORK is None:
+            agent_1_type = "_UCT"
+        else:
+            agent_1_type = "_" + gc.AGENT_1_NEURAL_NETWORK.name
+    player_2 = gc.PLAYER_2.name
+    agent_2_type = ""
+    if gc.PLAYER_2 == gc.PlayerMode.AGENT:
+        if gc.AGENT_1_NEURAL_NETWORK is None:
+            agent_2_type = "_UCT"
+        else:
+            agent_2_type = "_" + gc.AGENT_1_NEURAL_NETWORK.name
+    return "agent/training/" + player_1 + agent_1_type + "vs" + player_2 + agent_2_type + ".csv"
+   
 
 def training_data_initializer(temp_file):
-    if not Path(FILE).exists():
-        with open(FILE, "w") as f:
+    file = parse_filename()
+    if not Path(file).exists():
+        with open(file, "w") as f:
             f.write(parse_state() + "current_player_won\n")
 
     if Path(temp_file).exists():
@@ -27,22 +46,23 @@ def training_data_generator(state, temp_file):
         
 
     pieces = state.white_pieces + state.black_pieces
-    if pieces == ROWS * COLS:
+    if pieces == gc.ROWS * gc.COLS:
         player_winner = get_player_winner(state.white_pieces, state.black_pieces)
         last_move_formatter(player_winner, temp_file)
 
 
 def last_move_formatter(player_winner, temp_file):
+    file = parse_filename()
     moves = []
     with open(temp_file, mode="r", encoding="UTF-8", newline="\n") as f:
         lector = csv.reader(f, delimiter=";")
         next(lector)
         for line in lector:  
-            if len(line) < ROWS*COLS+1:
+            if len(line) < gc.ROWS* gc.COLS+1:
                 continue              
             moves.append((line[:-1], parse_winner(line[-1], player_winner)))
 
-    with open(FILE, mode="a", newline="\n") as f:
+    with open(file, mode="a", newline="\n") as f:
         for move in moves:
             f.write(parse_move(move))
 
@@ -58,8 +78,8 @@ def get_player_winner(white_pieces, black_pieces):
 
 def parse_board(board):
     res = ''
-    for row in range(ROWS):
-        for col in range(COLS):
+    for row in range(gc.ROWS):
+        for col in range(gc.COLS):
             pos = board[row][col]
             if pos is None:
                 res = res + "0;"
@@ -81,8 +101,8 @@ def parse_winner(current_player, player_winner):
 
 def parse_state():
     res = ""
-    for row in range(ROWS):
-        for col in range(COLS):
+    for row in range(gc.ROWS):
+        for col in range(gc.COLS):
             res += LETTERS[row] + NUMBERS[col] + ";"
     return res
 
