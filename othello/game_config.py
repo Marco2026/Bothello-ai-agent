@@ -17,15 +17,15 @@ class PlayerMode(Enum):
     AGENT = 2
 
 class NeuralNetwork(Enum):
-    NEURAL_NETWORK_STARTER = 0  
-    NEURAL_NETWORK_IMPROVED = 1  
+    STARTER_NN = 0  
+    IMPROVED_NN = 1  
 
 PLAYER_1 = PlayerMode(1)
-PLAYER_2 = PlayerMode(1)
+PLAYER_2 = PlayerMode(2)
 
 AGENT_1_NEURAL_NETWORK = None
 AGENT_2_NEURAL_NETWORK = None
 
-BOT_MOVE_TIME = 1 #ms
-SIMULATIONS = 20
+BOT_MOVE_TIME = 50 #ms
+SIMULATIONS = 2
 SIMULATION_MODE = False
