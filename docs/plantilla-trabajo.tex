@@ -137,25 +137,37 @@ poda alfa-beta.
 
 \subsection{Métodos empleados}
 
-Describir aquí los métodos y técnicas empleadas (búsqueda en espacio de
-estados, algoritmos genéticos, redes bayesianas, técnicas de clasificación,
-redes neuronales, etc.). Si es necesario, separarlos en distintas subsecciones
-dentro de Antecedentes.
-
 Nuestra aproximación para crear un agente capaz de hacer movimientos de forma estratégica
 a lo largo de la partida de Otelo, se basa en el uso del algoritmo de búsqueda en árboles
-de Monte Carlo (MCTS) con un enfoque Upper Confidence Bound Tree (UCT).
-
-Se pueden usar listas por puntos como sigue:
+de Monte Carlo (MCTS) con un enfoque Upper Confidence Bound Tree (UCT) como método para
+equilibrar la exploración y la explotación. La fórmula de UCT es la siguiente:
+\[
+UCT = \bar{X}_j + 2C_p \sqrt{\frac{2 \ln{n}}{n_j}} 
+\]
+donde:
 \begin{itemize}
-\item Un punto: esto es un ejemplo de una lista.
-\item Otro punto.
+\item $\bar{X}_j$: es la recompensa del nodo $j$ dividida entre la cantidad de veces que 
+ha sido visitado, comprendida en el rango $[0,1]$.
+\item $C_p$: es una constante que permite regular entre el término exploratorio y el término
+explotador de la función UCT.
+\item $n$: es el número de veces que el nodo actual (nodo padre) ha sido visitado.
+\item $n_j$: es el número de veces que el hijo $j$ ha sido visitado.
 \end{itemize}
 
-Por último, se debe hacer un uso correcto de las referencias bibliográficas,
-para que el lector pueda acceder a más información~\cite{b2}. Todas las
-referencias al final del documento deben ser citadas al menos una vez.
-
+La forma en la que $C_p$ sirve para controlar el equilibrio entre exploración y explotación
+es la siguiente:
+\begin{itemize}
+\item $\bar{X}_j$: se corresponde con el término explotador, es decir, cuanto mayor sea la
+recompensa acumulada por entrar al nodo, más probable será que se vuelva a visitar y cuantas
+más veces se haya visitado el nodo, más se favorecerá ir a otros nodos que no se hayan visitado
+tantas veces.
+\item $C_p \sqrt{\frac{2 \ln{n}}{n_j}}$: es el término exploratorio, el cual favorece que se visiten
+nodos que no han sido visitados tantas veces (por lo que no se sabe aún si darán buenas recompensas
+o no). El término disminuye cuanto mayor sea $n_j$ (y, por tanto, se haya explorado ese nodo), mientras
+que el logaritmo del numerador asegura que la exploración decrezca lentamente a medida que se visita al
+padre. La constante, por lo tanto, sirve para controlar la importancia que se le da a la exploración
+frente a la explotación.
+\end{itemize}
 
 \subsection{Trabajo Relacionado}
 
@@ -331,6 +343,8 @@ Te adjunto la clase.
 que haga predicciones, pero no se si esta es la forma correcta de hacerlo 
 (organización de código, tener cuidado en que si hay dos agentes no se sobreescriban 
 los datos de ambos objetos, etc)
+\item Puedes explicarme en mayor detalle qué es el upper bound confidence tree
+en el contexto de Monte Carlo Tree Search algorithm?
 \end{itemize}
 
 \begin{thebibliography}{00}
