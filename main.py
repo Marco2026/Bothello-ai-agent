@@ -311,6 +311,7 @@ def simulate_games (num_games = gc.SIMULATIONS):
     for i in range(num_games):
         print(f"Simulating game {i+1} / {num_games}")
         play_game()
+    print(f"Simulated {num_games} games successfully.")
    
 
 main_menu()

@@ -14,13 +14,9 @@ def training_data_initializer(temp_file):
     if not Path(FILE).exists():
         with open(FILE, "w") as f:
             f.write(parse_state() + "current_player_won\n")
-            print(f"File {FILE} updated with the info of the file {temp_file}")
 
     if Path(temp_file).exists():
         os.remove(temp_file)
-
-    with open(temp_file, mode="a", newline="\n") as f:
-        f.write(parse_state() + "current_player_won\n")
 
 def training_data_generator(state, temp_file):
     board = parse_board(state.board)
@@ -41,7 +37,9 @@ def last_move_formatter(player_winner, temp_file):
     with open(temp_file, mode="r", encoding="UTF-8", newline="\n") as f:
         lector = csv.reader(f, delimiter=";")
         next(lector)
-        for line in lector:
+        for line in lector:  
+            if len(line) < ROWS*COLS+1:
+                continue              
             moves.append((line[:-1], parse_winner(line[-1], player_winner)))
 
     with open(FILE, mode="a", newline="\n") as f:
