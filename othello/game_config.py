@@ -8,7 +8,6 @@ ROWS = 8
 COLS = 8
 SQUARE_SIZE = BOARD_WIDTH // COLS
 
-USE_NEURAL_NETWORK = False
 GENERATE_TRAINING_DATA = True
 
 class PlayerMode(Enum):
@@ -17,14 +16,14 @@ class PlayerMode(Enum):
     AGENT = 2
 
 class NeuralNetwork(Enum):
-    STARTER_NN = 0  
+    STARTER_NN = 0
     IMPROVED_NN = 1  
 
 PLAYER_1 = PlayerMode(1)
 PLAYER_2 = PlayerMode(2)
 
-AGENT_1_NEURAL_NETWORK = None
-AGENT_2_NEURAL_NETWORK = None
+AGENT_1_NEURAL_NETWORK = NeuralNetwork(0)
+AGENT_2_NEURAL_NETWORK = NeuralNetwork(0)
 
 BOT_MOVE_TIME = 50 #ms
 SIMULATIONS = 2

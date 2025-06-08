@@ -4,15 +4,21 @@ from sklearn.model_selection import train_test_split
 from keras import Sequential, Input
 from keras.layers import Dense, Normalization
 from keras.optimizers import SGD
+from keras.models import load_model
+
+NEURAL_NETWORK_MODEL = 'agent/training/models/bothello.h5'
 
 class OthelloNet:
 
-    def __init__(self):
-        (self.training_attributes, 
-         self.test_attributes, 
-         self.training_target, 
-         self.test_target) = self.prepare_data()
-        self.model = self.build_model()        
+    def __init__(self, import_path=None):
+        if import_path is None:
+            (self.training_attributes, 
+            self.test_attributes, 
+            self.training_target, 
+            self.test_target) = self.prepare_data()
+            self.model = self.build_model()
+        else:
+            self.model = load_model(import_path)        
 
     def prepare_data(self):
         othello_games = pd.read_csv('agent/training/training_data.csv', delimiter=";")
@@ -47,16 +53,35 @@ class OthelloNet:
 
     def evaluate_model(self):
         resultado = self.model.evaluate(self.test_attributes, self.test_target)
+        print("\n" + "+" + "-"*50 + "+")
+        print(f"\nResultado de evaluacion: {resultado}\n")
+        print("+" + "-"*50 + "+")
         return resultado
     
     def predict(self, state):
         if isinstance(state, pd.DataFrame):
             state_np = state.to_numpy()
         else:
-            state_np = state
+            state_np = np.array(state).reshape(1, 64)
 
         prediction = self.model.predict(state_np)
         return prediction
+    
+    def save_model(self, path):
+        self.model.save(path)
+        print(f"Modelo guardado en {path}")
+
+    def load_model(self, path):
+        self.model = load_model(path)
+        print(f"Modelo cargado desde {path}")
 
     def check_dataset_status(dataset):
         dataset.isna().any()
+
+if __name__ == "__main__":
+    net = OthelloNet()
+    net.prepare_data()
+    net.build_model()
+    net.train_model()
+    net.evaluate_model()
+    net.save_model(NEURAL_NETWORK_MODEL)

@@ -1,5 +1,7 @@
 import time
 from .hyperparameters import TIME_TO_SEARCH, CONSTANT_C
+from othello.game_config import ROWS, COLS
+from othello.colors import WHITE
 import math
 import random
 from othello.board import Board
@@ -111,7 +113,6 @@ def expand(node):
 
     return new_child
 
-
 def best_child(node, constant_c):
     return max(
         node.children,
@@ -127,8 +128,9 @@ def default_policy(state):
 
 def neural_network_policy(state, neural_network):
     simulation_state = state.copy()
-    reward = neural_network.predict(simulation_state)
-    return reward
+    prepared_state = parse_state(simulation_state)
+    reward = neural_network.predict(prepared_state)
+    return float(reward[0][0])
 
 def backup(node, reward):
     while node is not None:
@@ -151,3 +153,21 @@ def generate_time_countdown(time_to_search):
 
 def is_time_remaining(actual_moment, time_limit):
     return (time_limit - actual_moment) > 0
+
+def parse_state(raw_state):
+    prepared_state = parse_board(raw_state.board)
+    return prepared_state
+
+def parse_board(board):
+    res = []
+    for row in range(ROWS):
+        for col in range(COLS):
+            pos = board[row][col]
+            if pos is None:
+                res.append(0)
+            else:
+                if pos.color == WHITE:
+                    res.append(1)
+                else:
+                    res.append(2)
+    return res
