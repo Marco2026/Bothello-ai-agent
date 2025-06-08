@@ -283,27 +283,26 @@ def change_player_mode(player_name):
 def parse_agent_mode(agent):
     res = "Unknown"
     if agent is None:
-        res= "UCT without Neural Network"
+        res= "UCT without"
     else :
         res = agent.name.replace('_', ' ').title()
-    return res
+    return res  + " Neural Network"
 
-def change_agent_mode(agent, player_name): # Descomentar cuando se implemente la red neuronal
-    pass
-    # current_mode = getattr(gc, player_name)
-    # if current_mode != gc.PlayerMode(2):
-    #     return
-    # current_agent = getattr(gc, agent)
-    # if current_agent is None:
-    #     new_agent = gc.NeuralNetwork(0)
-    # else:
-    #     current_agent = getattr(gc, agent)
-    #     if current_agent.value == len(gc.NeuralNetwork) - 1 :
-    #         new_agent = None
-    #     else:
-    #         new_agent = gc.NeuralNetwork((current_agent.value + 1))
-    # setattr(gc, agent, new_agent)
-    # return new_agent
+def change_agent_mode(agent, player_name): 
+    current_mode = getattr(gc, player_name)
+    if current_mode != gc.PlayerMode(2):
+        return
+    current_agent = getattr(gc, agent)
+    if current_agent is None:
+        new_agent = gc.NeuralNetwork(0)
+    else:
+        current_agent = getattr(gc, agent)
+        if current_agent.value == len(gc.NeuralNetwork) - 1 :
+            new_agent = None
+        else:
+            new_agent = gc.NeuralNetwork((current_agent.value + 1))
+    setattr(gc, agent, new_agent)
+    return new_agent
     
 def simulate_games (num_games = gc.SIMULATIONS):  
     tick = "\u2714"
