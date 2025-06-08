@@ -95,7 +95,7 @@ def parse_player(current_player):
 def parse_winner(current_player, player_winner):
     res = "0"
     if player_winner is not None:
-        if current_player == parse_player(str(player_winner)):
+        if current_player == parse_player(player_winner):
             res = "1"
         else:
             res = "-1"
