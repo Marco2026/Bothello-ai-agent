@@ -8,7 +8,6 @@ from pathlib import Path
 LETTERS = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n"]
 NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
 
-
 def parse_filename():
     if not gv.GENERATE_TRAINING_DATA:
         return 
@@ -22,12 +21,11 @@ def parse_filename():
     player_2 = gv.PLAYER_2.name
     agent_2_type = ""
     if gv.PLAYER_2 == gv.PlayerMode.AGENT:
-        if gv.AGENT_1_NEURAL_NETWORK is None:
+        if gv.AGENT_2_NEURAL_NETWORK is None:
             agent_2_type = "_UCT"
         else:
-            agent_2_type = "_" + gv.AGENT_1_NEURAL_NETWORK.name
+            agent_2_type = "_" + gv.AGENT_2_NEURAL_NETWORK.name
     return "agent/training/games/" + player_1 + agent_1_type + "vs" + player_2 + agent_2_type + ".csv"
-   
 
 def training_data_initializer(temp_file):
     if not gv.GENERATE_TRAINING_DATA:
@@ -42,17 +40,15 @@ def training_data_initializer(temp_file):
 
 def training_data_generator(state, temp_file):
     board = parse_board(state.board)
-    current_player = str(state.current_player)
+    current_player = parse_player(state.current_player)
 
     with open(temp_file, mode="a", newline="\n") as f:
         f.write(board + current_player + "\n")
         
-
     pieces = state.white_pieces + state.black_pieces
     if pieces == ROWS * COLS:
         player_winner = get_player_winner(state.white_pieces, state.black_pieces)
         last_move_formatter(player_winner, temp_file)
-
 
 def last_move_formatter(player_winner, temp_file):
     file = parse_filename()
@@ -68,8 +64,6 @@ def last_move_formatter(player_winner, temp_file):
     with open(file, mode="a", newline="\n") as f:
         for move in moves:
             f.write(parse_move(move))
-
-
 
 def get_player_winner(white_pieces, black_pieces):
     res = None
@@ -93,10 +87,18 @@ def parse_board(board):
                     res = res + "2;"
     return res
 
+def parse_player(current_player):
+    res = "0"
+    if current_player == WHITE:
+        res = "1"
+    elif current_player == BLACK:
+        res = "2"
+    return res
+
 def parse_winner(current_player, player_winner):
     res = "0"
     if player_winner is not None:
-        if str(current_player) == str(player_winner):
+        if current_player == parse_player(player_winner):
             res = "1"
         else:
             res = "-1"
@@ -112,7 +114,6 @@ def parse_state():
 def parse_move(move):
     return ';'.join(move[0]) + ";" + move[1] + "\n"
 
-
 def delete_all_temp_csv():
     temp_folder = Path("agent/training/temp")
     if not temp_folder.exists():
@@ -120,9 +121,3 @@ def delete_all_temp_csv():
     
     for file in temp_folder.glob("*.csv"):
         os.remove(file)
-
-
-            
-
-
-

@@ -6,7 +6,7 @@ from keras.layers import Dense, Normalization
 from keras.optimizers import SGD
 from keras.models import load_model
 
-NEURAL_NETWORK_MODEL = 'agent/training/models/bothello.h5'
+NEURAL_NETWORK_MODEL = 'agent/training/models/bothello_first_training.h5'
 
 class OthelloNet:
 
@@ -21,7 +21,7 @@ class OthelloNet:
             self.model = load_model(import_path)        
 
     def prepare_data(self):
-        othello_games = pd.read_csv('agent/training/training_data.csv', delimiter=";")
+        othello_games = pd.read_csv('agent/training/training_data_starter_nn.csv', delimiter=";")#'agent/training/training_data_starter_nn.csv', delimiter=";")
 
         attributes = othello_games.drop(labels='current_player_won', axis=1)
         target = othello_games['current_player_won']
@@ -41,14 +41,14 @@ class OthelloNet:
         model = Sequential()
         model.add(Input(shape=(64,)))
         model.add(normalizator)
-        model.add(Dense(16, activation='tanh'))
-        model.add(Dense(5))
+        model.add(Dense(32, activation='sigmoid'))
+        model.add(Dense(1, activation="tanh"))
 
         model.compile(optimizer=SGD(learning_rate=0.01), loss='mean_squared_error')
         return model
 
     def train_model(self):
-        history = self.model.fit(self.training_attributes, self.training_target, batch_size=256, epochs=100)
+        history = self.model.fit(self.training_attributes, self.training_target, batch_size=256, epochs=800)
         return history.history
 
     def evaluate_model(self):
