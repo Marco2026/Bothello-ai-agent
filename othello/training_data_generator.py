@@ -25,7 +25,7 @@ def parse_filename():
             agent_2_type = "_UCT"
         else:
             agent_2_type = "_" + gc.AGENT_1_NEURAL_NETWORK.name
-    return "agent/training/" + player_1 + agent_1_type + "vs" + player_2 + agent_2_type + ".csv"
+    return "agent/training/games/" + player_1 + agent_1_type + "vs" + player_2 + agent_2_type + ".csv"
    
 
 def training_data_initializer(temp_file):
