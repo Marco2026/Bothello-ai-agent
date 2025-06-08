@@ -38,21 +38,19 @@
 \title{La revolución de Othello, Bothello}
 
 \author{
-  \IEEEauthorblockN{Marco Antonio Herrera Luján}
-  \IEEEauthorblockA{
-    \textit{Dpto. Ciencias de la Computación e Inteligencia Artificial}\\
-    \textit{Universidad de Sevilla}\\
-    Sevilla, España\\
-    marherluj@alum.us.es}
-  
-  \and
-  
   \IEEEauthorblockN{Francisco Gago Vázquez}
   \IEEEauthorblockA{
     \textit{Dpto. Ciencias de la Computación e Inteligencia Artificial}\\
     \textit{Universidad de Sevilla}\\
     Sevilla, España\\
     fragagvaz@alum.us.es}
+  \and
+  \IEEEauthorblockN{Marco Antonio Herrera Luján}
+  \IEEEauthorblockA{
+    \textit{Dpto. Ciencias de la Computación e Inteligencia Artificial}\\
+    \textit{Universidad de Sevilla}\\
+    Sevilla, España\\
+    marherluj@alum.us.es}
 }
 
 \maketitle
@@ -98,8 +96,8 @@ un bot que realizara jugadas aleatorias y a su vez desarrollamos la lógica nece
 que al jugar contra el bot, la partida quedara registrada en un fichero csv con el texto
 completamente preparado con vista a entrenar una red neuronal en el futuro.
 
-Una vez teníamos el bot y el sistema de generación de datos, nos informamos~\cite{b8} sobre cómo
-deberíamos implementar un agente para cumplir con el objetivo de atacar un problema de
+Una vez teníamos el bot y el sistema de generación de datos, nos informamos sobre cómo
+deberíamos implementar un agente~\cite{b8} para cumplir con el objetivo de atacar un problema de
 búsqueda adversaria en un entorno competitivo, en concreto, en un juego determinista, de dos jugadores,
 por turnos, con información perfecta y de suma cero (es decir, lo que es bueno para un jugador es un
 inconveniente para su oponente).
@@ -189,19 +187,39 @@ se puede emplear pseudocódigo (nunca código), esquemas, tablas, etc.
   \label{fig:ejemplo}
 \end{figure}
 
-A continuación, un ejemplo de uso de listas numeradas:
+Desarrollo del proyecto:
 \begin{enumerate}
-\item\label{item:dos-alumnos} \textit{Trabajos con dos alumnos:} poner nombre y
-  apellidos completos de cada uno, y correos electrónicos de contacto (a ser
-  posible de la Universidad de Sevilla). El orden de los alumnos se fijará por
-  orden alfabético según los apellidos.
-\item \textit{Trabajo con un autor:} cambiar la cabecera de la siguiente manera
+\item \textit{Preparación del proyecto:} creamos el repositorio
+  en GitHub y construimos el entorno virtual de Python para el proyecto.
+\item \textit{Implementación de Otelo:} utilizando la librería Pygame,
+  implementamos el juego de mesa Otelo, consiguiendo que dos personas
+  puedan jugar entre sí.
   \begin{enumerate}
-  \item \textit{Una sola columna:} solo se debe especificar un alumno.
-  \item \textit{Información a añadir:} la misma que la especificada en el
-    punto~\ref{item:dos-alumnos}.
-  \end{enumerate}
+  \item \textit{Inicialización de juego:} creamos el módulo \texttt{main} 
+    permitiendo abrir el juego y mostrar el tablero, y el módulo \texttt{game\_config},
+    que establece constantes básicas del juego, como las dimensiones de la pantalla o 
+    el tamaño del tablero.
+  \item \textit{Habilitación para colocar piezas:} implementamos la clase \texttt{Board}
+    y la clase \texttt{Piece}, con las funcionalidades necesarias para que los jugadores
+    colocaran una ficha al hacer click en cada casilla del tablero.
+  \item \textit{Aplicación de reglas de Otelo:} desarrollamos toda la lógica necesaria
+    para ceñirnos a las reglas de Otelo, como la captura de piezas del oponente,
+    la validación de movimientos o el cambio de turno.
+  \end{enumerate} 
+
+Organizar jerárquicamente, ordenar y completar
+\item \textit{Creación de Agente modo Bot:}
+\item \textit{Jugar contra bot:} 
+\item \textit{Bot contra bot:} 
+\item \textit{Grabacion de partidas a csv:} 
+\item \textit{agente UCT:} 
+\item \textit{¿¿poder cambiar quien controla negras y blancas indistintamente??} 
+\item \textit{Simulación de X partidas:} 
+\item \textit{Red neuronal} 
+\item \textit{ETC (entrenar red, lo que vayamos haciendo)} 
+  
 \end{enumerate}
+
 
 Las figuras se deben mencionar en el texto, como la
 \figurename~\ref{fig:ejemplo}. También se pueden añadir ecuaciones, como la
