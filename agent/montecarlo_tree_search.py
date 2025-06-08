@@ -14,6 +14,7 @@ class Node:
         self.state = state
         self.action_selected = action_selected
         self.isTerminal = state.isTerminal
+        self.untried_actions = list(state.actions)
 
     def calculate_average_value(self):
         if self.visits == 0:
@@ -94,13 +95,22 @@ def tree_policy(node):
     return node
 
 def expand(node):
-    for action in node.state.actions:
-        new_state = next_state(node.state, action)
-        new_child = Node(new_state, parent=node, action_selected=action)
-        node.children.append(new_child)
-    if node.children:
+    if not node.untried_actions:
         node.isExpanded = True
-    return random.choice(node.children)
+        return 
+
+    action = random.choice(node.untried_actions)
+    node.untried_actions.remove(action)
+
+    new_state = next_state(node.state, action)
+    new_child = Node(new_state, parent=node, action_selected=action)
+    node.children.append(new_child)
+
+    if not node.untried_actions:
+        node.isExpanded = True
+
+    return new_child
+
 
 def best_child(node, constant_c):
     return max(
