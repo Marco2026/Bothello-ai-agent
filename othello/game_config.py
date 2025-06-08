@@ -16,8 +16,8 @@ class PlayerMode(Enum):
     AGENT = 2
 
 class NeuralNetwork(Enum):
-    STARTER_NN = 0
-    IMPROVED_NN = 1  
+    STARTER = 0
+    IMPROVED = 1  
 
 PLAYER_1 = PlayerMode(1)
 PLAYER_2 = PlayerMode(2)
