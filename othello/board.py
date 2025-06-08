@@ -1,9 +1,8 @@
-import uuid
 import pygame as pg
-import copy
 import time
-from .game_config import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE, GENERATE_TRAINING_DATA
-from .colors import BLACK, WHITE, GREEN
+from game.game_const import BOARD_WIDTH, BOARD_HEIGHT, ROWS, COLS, SQUARE_SIZE
+from game.game_var import GENERATE_TRAINING_DATA
+from game.colors import BLACK, WHITE, GREEN
 from .piece import Piece
 from .training_data_generator import training_data_generator, training_data_initializer
 
