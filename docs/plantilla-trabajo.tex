@@ -191,6 +191,8 @@ Desarrollo del proyecto:
 \begin{enumerate}
 \item \textit{Preparación del proyecto:} creamos el repositorio
   en GitHub y construimos el entorno virtual de Python para el proyecto.
+  Todas las dependencias necesarias se encuentran en el fichero
+  \texttt{requirements.txt}.
 \item \textit{Implementación de Otelo:} utilizando la librería Pygame,
   implementamos el juego de mesa Otelo, consiguiendo que dos personas
   puedan jugar entre sí.
@@ -206,17 +208,41 @@ Desarrollo del proyecto:
     para ceñirnos a las reglas de Otelo, como la captura de piezas del oponente,
     la validación de movimientos o el cambio de turno.
   \end{enumerate} 
+\item  \textit{Habilitación de bot:} programamos el juego para permitir partidas contra un
+ bot controlado por el sistema, el cual escoge sus movimientos de  forma completamente aleatoria.
+  \begin{enumerate}
+  \item \textit{Incorporación de modos de juego:} como complemento a la creación del bot,
+  añadimos la posibilidad de seleccionar entre distintos modos de juego. 
+  De este modo, el usuario puede optar por jugar contra otro jugador, enfrentarse al bot, 
+  o bien observar una partida controlada íntegramente por el sistema.
+  \end{enumerate}
 
-Organizar jerárquicamente, ordenar y completar
-\item \textit{Creación de Agente modo Bot:}
-\item \textit{Jugar contra bot:} 
-\item \textit{Bot contra bot:} 
-\item \textit{Grabacion de partidas a csv:} 
-\item \textit{agente UCT:} 
-\item \textit{¿¿poder cambiar quien controla negras y blancas indistintamente??} 
-\item \textit{Simulación de X partidas:} 
+\item \textit{Creación del agente:} incorporamos un agente capaz de tomar decisiones
+ estratégicas utilizando el algoritmo Monte Carlo Tree Search (MCTS).
+  \begin{enumerate}
+  \item \textit{Enfoque UCT:} se utilizó la variante Upper Confidence Bound Tree (UCT) 
+  con el fin de equilibrar de manera efectiva la exploración y la explotación durante la búsqueda. 
+  Esto permite que el algoritmo seleccione tanto las acciones con mejores resultados históricos
+  como aquellas opciones menos exploradas.
+  \item \textit{Elección de rol de ambos jugadores:} mejoramos la selección de modos de juego añadiendo
+  la selección independiente del controlador asignado a cada jugador (humano, bot o agentes 
+  con distintas políticas). De este modo, el usuario puede decidir quién controla las fichas negras 
+  y quién las blancas, habilitando así todas las combinaciones posibles entre tipos de jugador.
+  \end{enumerate}
+
+\item \textit{Grabación de partidas a csv:} añadimos una funcionalidad para grabar las partidas
+  jugadas en un fichero csv, de modo que posteriormente se pueda utilizar para entrenar una red 
+  neuronal. Estos datos se pueden crear de manera opcional, en un archivo \texttt{.csv} que se
+  genera en la carpeta \texttt{agent/training}, y toma el nombre según el tipo de partida que se
+  grabe. Por tanto, si se juega una partida en la que un bot juega con las fichas negras y un agente con 
+  una red neuronal \textit{NN} controla las blancas, se guardará en \texttt{agent/training/BOTvsAGENT\_NN.csv} 
+  Posteriormente, todos estos ficheros se copiarán en \texttt{agent/training/training\_data.csv} 
+
+\item \textit{Simulación de partidas:}  Para grabar datos de entrenamiento de manera automatizada,
+  implementamos un sistema de generación de partidas automáticas. Con la generación de partidas,
+  logramos dotar a la red neuronal de una base de datos sólida para su entrenamiento.
+  
 \item \textit{Red neuronal} 
-\item \textit{ETC (entrenar red, lo que vayamos haciendo)} 
   
 \end{enumerate}
 
