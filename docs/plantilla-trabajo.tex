@@ -121,71 +121,135 @@ por último las secciones de bibliografía y consultas a IA generativa.
 
 \section{Preliminares}
 
-En esta sección se hace una breve introducción de las técnicas empleadas y
-también trabajos relacionados, si los hay.
-
 Durante la realización del proyecto hemos utilizado dos técnicas principales:
-el algoritmo de búsqueda en árboles de Monte Carlo (MCTS) y el modelo de Inteligencia
-artificial basado en aprendizaje supervisado de las redes neuronales, tal y como se ha
-utilizado en proyectos similares con anterioridad, por ejemplo en juegos de mesa como el 
-``Go''~\cite{b10} parece que esta aproximación es la que mejor funciona debido a la gran 
-complejidad que posee el juego y que por tanto hace imposible la búsqueda de un camino
-completamente óptimo como podría intentar una aproximación con el algoritmo MiniMax con
-poda alfa-beta.
+el algoritmo de búsqueda en árboles de Monte Carlo (MCTS) con enfoque Upper Confidence 
+Bound Tree (UCT) y el modelo de Inteligencia Artificial basado en aprendizaje supervisado 
+de las redes neuronales, tal y como se ha utilizado en proyectos similares con anterioridad,
+por ejemplo en juegos de mesa como el ``Go''~\cite{b10} parece que esta aproximación es 
+la que mejor funciona debido a la gran complejidad que posee el juego y que por tanto hace
+imposible la búsqueda de un camino óptimo como podría intentar una aproximación con el 
+algoritmo MiniMax con poda alfa-beta.
 
 \subsection{Métodos empleados}
 
-Nuestra aproximación para crear un agente capaz de hacer movimientos de forma estratégica
-a lo largo de la partida de Otelo, se basa en el uso del algoritmo de búsqueda en árboles
-de Monte Carlo (MCTS) con un enfoque Upper Confidence Bound Tree (UCT) como método para
-equilibrar la exploración y la explotación. La fórmula de UCT es la siguiente:
-\[
-UCT = \bar{X}_j + 2C_p \sqrt{\frac{2 \ln{n}}{n_j}} 
-\]
-donde:
-\begin{itemize}
-\item $\bar{X}_j$: es la recompensa del nodo $j$ dividida entre la cantidad de veces que 
-ha sido visitado, comprendida en el rango $[0,1]$.
-\item $C_p$: es una constante que permite regular entre el término exploratorio y el término
-explotador de la función UCT.
-\item $n$: es el número de veces que el nodo actual (nodo padre) ha sido visitado.
-\item $n_j$: es el número de veces que el hijo $j$ ha sido visitado.
-\end{itemize}
+\begin{enumerate}
 
-La forma en la que $C_p$ sirve para controlar el equilibrio entre exploración y explotación
-es la siguiente:
-\begin{itemize}
-\item $\bar{X}_j$: se corresponde con el término explotador, es decir, cuanto mayor sea la
-recompensa acumulada por entrar al nodo, más probable será que se vuelva a visitar y cuantas
-más veces se haya visitado el nodo, más se favorecerá ir a otros nodos que no se hayan visitado
-tantas veces.
-\item $C_p \sqrt{\frac{2 \ln{n}}{n_j}}$: es el término exploratorio, el cual favorece que se visiten
-nodos que no han sido visitados tantas veces (por lo que no se sabe aún si darán buenas recompensas
-o no). El término disminuye cuanto mayor sea $n_j$ (y, por tanto, se haya explorado ese nodo), mientras
-que el logaritmo del numerador asegura que la exploración decrezca lentamente a medida que se visita al
-padre. La constante, por lo tanto, sirve para controlar la importancia que se le da a la exploración
-frente a la explotación.
-\end{itemize}
+  \item \textit{Upper Confidence Bound Tree}
+
+  Nuestra aproximación para crear un agente capaz de hacer movimientos de forma estratégica
+  a lo largo de la partida de Otelo, se basa en el uso del algoritmo de búsqueda en árboles
+  de Monte Carlo (MCTS) con un enfoque Upper Confidence Bound Tree (UCT) como método para
+  equilibrar la exploración y la explotación. La fórmula de UCT es la siguiente:
+  \[
+  UCT = \bar{X}_j + 2C_p \sqrt{\frac{2 \ln{n}}{n_j}} 
+  \]
+  donde:
+
+  \begin{itemize}
+    \item $\bar{X}_j$: es la recompensa del nodo $j$ dividida entre la cantidad de veces que 
+    ha sido visitado, comprendida en el rango $[0,1]$.
+    \item $C_p$: es una constante que permite regular entre el término exploratorio y el término
+    explotador de la función UCT.
+    \item $n$: es el número de veces que el nodo actual (nodo padre) ha sido visitado.
+    \item $n_j$: es el número de veces que el hijo $j$ ha sido visitado.
+  \end{itemize}
+
+  La forma en la que $C_p$ sirve para controlar el equilibrio entre exploración y explotación
+  es la siguiente:
+  \begin{itemize}
+    \item $\bar{X}_j$: se corresponde con el término explotador, es decir, cuanto mayor sea la
+    recompensa acumulada por entrar al nodo, más probable será que se vuelva a visitar y cuantas
+    más veces se haya visitado el nodo, más se favorecerá ir a otros nodos que no se hayan visitado
+    tantas veces.
+    \item $C_p \sqrt{\frac{2 \ln{n}}{n_j}}$: es el término exploratorio, el cual favorece que se visiten
+    nodos que no han sido visitados tantas veces (por lo que no se sabe aún si darán buenas recompensas
+    o no). El término disminuye cuanto mayor sea $n_j$, es decir, cuanto más se haya explorado ese nodo, mientras
+    que el logaritmo del numerador asegura que la exploración decrezca lentamente a medida que se visita al
+    padre. La constante, por lo tanto, sirve para controlar la importancia que se le da a la exploración
+    frente a la explotación.
+  \end{itemize}
+
+  \item \textit{Monte Carlo Tree Search}
+  
+  El algoritmo de búsqueda en árboles de Monte Carlo ha probado ser una gran aproximación para encontrar
+  la jugada óptima en juegos con información perfecta y de suma cero como el ajedrez o el Go.
+  
+  Este algoritmo se basa en la realización de 4 pasos diferenciados como se muestra en la Fig. 1.:
+
+  \begin{enumerate}
+  \item \textit{Selección}: Se comienza en la raíz del árbol de búsqueda y si el nodo no está expandido
+  se expande. Si está expandido, devolvemos el mejor hijo según el cálculo del UCT sobre todos sus hijos.
+  \item \textit{Expansión}: Teniendo un nodo no expandido, se elige una acción de las posibles acciones
+  (es decir, jugadas) que se pueden realizar en ese estado del juego y se retorna el nuevo nodo. Si el nodo
+  estaba expandido previamente, se llama a la función \textbf{best\_child}
+  \item \textit{Simulación}: Ahora se realizan movimientos en un tablero simulado siguiendo la política
+  pertinente. En un agente que implementara el MCTS sin modificaciones, se utilizaría la política por
+  defecto o \textbf{default\_policy}, que en nuestro caso genera acciones de forma aleatoria hasta llegar
+  a un nodo terminal. El agente que hemos implementado finalmente, sin embargo, utiliza una red neuronal
+  para inferir la probabilidad de victoria o derrota dado ese nodo.
+  \item \textit{Retropropagación}: Una vez obtenido el resultado de la simulación, se actualizan los valores
+  tanto de recompensa como de número de visitas por nodo.
+  \end{enumerate} 
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{Monte-Carlo-Tree-Search-steps-5.png}
+    \caption{Esquema de funcionamiento del algoritmo MCTS~\cite{b12}.}
+    \label{fig:montecarlo}
+  \end{figure}
+
+  Todos estos pasos se realizan dado un "presupuesto computacional", que normalmente es medido en tiempo
+  (nuestro caso) o en número de iteraciones. Nosotros hemos obtenido buenos resultados dando 1 segundo
+  para realizar los pasos anteriormente descritos.
+
+  \item \textit{Neural Network}
+  
+  La red neuronal es un modelo de Inteligencia Artificial basada en aprendizaje supervisado. Para utilizarla,
+  creamos un módulo encargado de generar "datos de entrenamiento" dentro de nuestro proyecto. Cada vez que
+  se ejecuta una partida, se puede activar una opción que guarda cada estado $S$ de la partida con los
+  siguientes datos:
+
+  \begin{itemize}
+    \item \textit{casillas}: se corresponden con cada una de las casillas del tablero. Como es de 8 filas
+    y 8 columnas, van desde $a1,a2, \dots,h8$. En cada casilla se encuentran los siguientes valores:
+
+    \begin{itemize}
+      \item $0$: si en esa casilla no hay ninguna pieza.
+      \item $1$: si en esa casilla hay una pieza blanca.
+      \item $2$: si en esa casilla hay una pieza negra.
+    \end{itemize}
+
+    \item \textit{current\_player\_won}: se corresponde con los siguientes valores:
+    
+    \begin{itemize}
+      \item $1$: si el jugador que estaba jugando en ese turno terminó ganando la partida.
+      \item $0$: si la partida terminó en empate.
+      \item $-1$: si el jugador que estaba jugando en ese turno terminó perdiendo la partida.
+    \end{itemize}
+
+  \end{itemize}
+
+  Tras hacer que el agente de Monte Carlo jugara contra sí mismo para generar datos suficientes, creamos
+  una red neuronal que, dado un nuevo estado de la partida (es decir, el estado del tablero), infiere la
+  probabilidad de ganar o perder la partida en el rango $[-1,1]$.
+
+\end{enumerate}
 
 \subsection{Trabajo Relacionado}
 
-Se puede realizar un recorrido en la literatura sobre trabajos anteriores que
-estén relacionados y que sea por tanto interesante comentar aquí. Por supuesto,
-añadir las referencias bibliográficas correspondientes.
+El enfoque de utilizar el algoritmo de MCTS junto con una red neuronal para inferir la política no es
+algo novedoso, se ha investigado en profundidad sobre el tema.
 
+En el artículo ``\textit{Mastering the game of Go with deep neural networks and tree search}''~\cite{b10}
+se explica cómo se entrenó al programa \textbf{AlphaGo} para llegar, por primera vez en el juego (el cual es
+de bastante mayor complejidad que el Otelo e incluso que el ajedrez) a derrotar al campeón mundial de Go
+y a todos los programas anteriormente presentados para competir en el juego de mesa.
 
 \section{Metodología}
 
 Esta sección se dedica a la descripción del método implementado en el trabajo.
 Esta parte es la correspondiente a lo realmente desarrollado en el trabajo, y
 se puede emplear pseudocódigo (nunca código), esquemas, tablas, etc.
-
-\begin{figure}
-  \centering
-  \includegraphics{ejemplo}
-  \caption{Ejemplo de un pie de figura. Imagen con derechos Creative Commons}
-  \label{fig:ejemplo}
-\end{figure}
 
 Desarrollo del proyecto:
 \begin{enumerate}
@@ -377,6 +441,7 @@ en el contexto de Monte Carlo Tree Search algorithm?
 \bibitem{b9} C. B. Browne, E. Powley, D. Whitehouse, S. M. Lucas, P. I. Cowling, P. Rohlfshagen, S. Tavener, D. Perez, S. Samothrakis and S. Colton: ``A survey of Monte Carlo Tree Search Methods", \textit{IEEE Transactions on Computational Intelligence and AI in Games}, vol. 4, no. 1, pp. 1-8, 2012, doi: 10.1109/TCIAIG.2012.2186810.
 \bibitem{b10} D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. van den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam, M. Lanctot, S. Dieleman, D. Grewe, J. Nham, N. Kalch-brenner, I. Sutskever, T. Lillicrap, M. Leach, K. Kavukcuoglu, T. Graepel, and D. Hassabis, “Mastering the game of Go with deep neural networks and tree search,” Nature, vol. 529, no. 7587, pp. 484–489, 2016, doi: 10.1038/nature16961.
 \bibitem{b11} D. Silver, J. Schrittwieser, K. Simonyan, I. Antonoglou, A. Huang, A. Guez, T. Hubert, L. Baker, M. Lai, A. Bolton, Y. Chen, T. Lillicrap, F. Hui, L. Sifre, G. van den Driessche, T. Graepel, and D. Hassabis, “Mastering the game of Go, Chess, and Shogi by self-play with a general reinforcement learning algorithm,” arXiv preprint, arXiv:1712.01815, 2017. arXiv:1712.01815.
+\bibitem{b12} https://www.researchgate.net/figure/Monte-Carlo-Tree-Search-steps-5\_fig2\_316451377
 \end{thebibliography}
 
 \end{document}
