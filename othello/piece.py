@@ -1,9 +1,9 @@
 import pygame as pg
-from .colors import BLACK, WHITE
-from .game_config import SQUARE_SIZE
+from game.colors import WHITE
+from game.game_const import SQUARE_SIZE
 
-WHITE_PIECE = pg.image.load('othello/assets/white_piece.png')
-BLACK_PIECE = pg.image.load('othello/assets/black_piece.png')
+WHITE_PIECE = pg.image.load('game/assets/white_piece.png')
+BLACK_PIECE = pg.image.load('game/assets/black_piece.png')
 
 class Piece:
     def __init__(self, row, col, color):

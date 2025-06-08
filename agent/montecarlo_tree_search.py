@@ -1,7 +1,7 @@
 import time
 from .hyperparameters import TIME_TO_SEARCH, CONSTANT_C
-from othello.game_config import ROWS, COLS
-from othello.colors import WHITE
+from game.game_const import ROWS, COLS
+from game.colors import WHITE
 import math
 import random
 from othello.board import Board
