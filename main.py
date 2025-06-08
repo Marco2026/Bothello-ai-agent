@@ -168,8 +168,8 @@ def play_game():
     board.build_initial_board()
     last_move_time = pg.time.get_ticks()
     clic_position = (99, 99)    
-    agent1 = Agent()
-    agent2 = Agent()
+    agent1 = Agent(gc.AGENT_1_NEURAL_NETWORK)
+    agent2 = Agent(gc.AGENT_2_NEURAL_NETWORK)
     
     
 
@@ -231,8 +231,6 @@ def play_game():
             running = False
 
         pg.display.flip()
-
-
 
 def put_human_piece(board,pos):
     row, col = get_row_col_from_mouse(pos)
