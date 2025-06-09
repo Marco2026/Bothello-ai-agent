@@ -11,11 +11,11 @@ class NeuralNetwork(Enum):
     STARTER = 0
     IMPROVED = 1  
 
-PLAYER_1 = PlayerMode(1)
-PLAYER_2 = PlayerMode(1)
+PLAYER_1 = PlayerMode(2)
+PLAYER_2 = PlayerMode(2)
 
 AGENT_1_NEURAL_NETWORK = None
 AGENT_2_NEURAL_NETWORK = None
 
 
-SIMULATIONS = 10
+SIMULATIONS = 50
