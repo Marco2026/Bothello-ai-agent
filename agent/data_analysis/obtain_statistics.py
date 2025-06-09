@@ -1,46 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def load_final_outcomes_by_full_board2(csv_path):
-    df = pd.read_csv(csv_path, delimiter=';')
-    pos_cols = [c for c in df.columns if c != 'current_player_won']
-    full_board = df[(df[pos_cols] != 0).all(axis=1)]
-    counts = full_board['current_player_won'].value_counts().reindex([-1, 0, 1], fill_value=0)
-    counts.index = ['Loss', 'Draw', 'Win']
-    return counts
-
-def load_final_outcomes_by_full_board3(csv_path):
-    df = pd.read_csv(csv_path, delimiter=';')
-    
-    df = df.iloc[2:].reset_index(drop=True)
-
-    last_row = df.iloc[-1]
-    
-    pos_cols = [c for c in df.columns if c != 'current_player_won']
-
-    final_movements_indexes = []
-
-    for i in range(len(df)):
-        row = df.iloc[i]
-        values = [row[col] for col in pos_cols]
-        zero_count = sum(1 for v in values if v == 0)
-
-        if zero_count == 58 and i > 0: 
-            final_movements_indexes.append(i - 1)
-
-    selected = df.iloc[final_movements_indexes].copy()
-
-    if not last_row.equals(selected.iloc[-1]):
-        selected = pd.concat([selected, last_row.to_frame().T], ignore_index=True)
-
-    counts = selected['current_player_won'].value_counts().reindex([-1, 0, 1], fill_value=0)
-    counts.index = ['Loss', 'Draw', 'Win']
-
-    return counts
-
 def load_final_outcomes_by_full_board(csv_path):
     df = pd.read_csv(csv_path, delimiter=';')
-    df = df.iloc[2:].reset_index(drop=True)
     
     pos_cols = [c for c in df.columns if c != 'current_player_won']
 
@@ -61,7 +23,8 @@ def load_final_outcomes_by_full_board(csv_path):
     final_movements_indexes.append(len(df) - 1)
     print(f"Final movements indexes: {final_movements_indexes}")
     selected = df.iloc[final_movements_indexes].copy()
-    print(f"Selected rows: {selected.shape[0]}")
+    # print(f"Selected rows in dataframe: {selected.shape[0]}")
+    # print("row X in dataframe corresponds to row X+2 in the original CSV file")
 
     counts = selected['current_player_won'].value_counts().reindex([-1, 0, 1], fill_value=0)
     counts.index = ['Loss', 'Draw', 'Win']
@@ -81,7 +44,7 @@ def plot_final_outcomes(counts):
     plt.show()
 
 if __name__ == "__main__":
-    csv_path = 'agent/training/games/AGENT_UCTvsAGENT_UCT.csv'
+    csv_path = 'agent/training/games/BOTvsAGENT_UCT.csv'
     counts = load_final_outcomes_by_full_board(csv_path)
     print(counts)
     plot_final_outcomes(counts)
