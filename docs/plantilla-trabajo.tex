@@ -121,6 +121,39 @@ sección de metodología, los resultados obtenidos de la aplicación de algoritm
 de resultados, el aprendizaje obtenido de los resultados y su estudio en la sección de conclusiones y
 por último las secciones de bibliografía y consultas a IA generativa.
 
+A continuación presentamos una breve tabla de contenido sobre el presente documento:
+
+\begin{enumerate}
+  \item Introducción
+  \item Preliminares
+  \begin{enumerate}
+    \item Métodos empleados
+    \item Trabajo Relacionado
+  \end{enumerate}
+  \item Metodología
+  \begin{enumerate}
+    \item Preparación del proyecto
+    \item Implementación de Otelo
+    \item Habilitación de bot
+    \item Creación del agente
+    \item Grabación de partidas
+    \item Simulación de partidas
+    \item Creación de la red neuronal
+  \end{enumerate}
+  \item Resultados
+  \begin{enumerate}
+    \item Bot vs Bot
+    \item Agente MCTS vs Bot
+    \item Agente MCTS vs Agente MCTS
+    \item Red Neuronal vs Bot
+    \item Red Neuronal vs Agente MCTS
+    \item Red Neuronal 1 vs Red Neuronal 2
+  \end{enumerate}
+  \item Conclusiones
+  \item Uso de la IA generativa
+  \item Bibliografía
+\end{enumerate}
+
 \section{Preliminares}
 
 Durante la realización del proyecto hemos utilizado dos técnicas principales:
@@ -572,6 +605,39 @@ en concreto obtuvimos los siguientes resultados:
     mejorar el entrenamiento de la red para conseguir un porcentaje mayor.
 
   \end{enumerate}
+
+  \item \textit{Red Neuronal 1 vs Red Neuronal 2}:
+  \begin{enumerate}
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Red Neuronal 1
+      \item \textit{Player 2}: Red Neuronal 2
+      \item \textit{Iteraciones para red 1}: $800$
+      \item \textit{Iteraciones para red 2}: $1500$
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    Entrenamos a la red con más datos que la vez anterior (incluyendo las partidas que
+    ella misma realizó contra el Bot y el Agente MCTS). Esperábamos que la red se comportara
+    mejor que la vez anterior al haber recibido más datos y más iteraciones de entrenamiento.
+    \item \textit{Resultados}\\
+    Con una muestra de 100 partidas generadas, obtuvimos los siguientes resultados (Fig. ~\ref{fig:agentnn01vsagentnn02}.):
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: $42$
+      \item \textit{Victorias de Player 2}: $41$
+      \item \textit{Empates}: $7$
+    \end{itemize}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\columnwidth]{AGENT_NN01vsAGENT_NN02.png}
+      \caption{Resultados de Agente con Red Neuronal 1 contra Agente con Red Neuronal 2.}
+      \label{fig:agentnn01vsagentnn02}
+    \end{figure}
+    Los resultados fueron algo decepcionantes, ya que tras entrenar de nuevo la red obtuvimos prácticamente
+    el mismo resultado.
+
+  \end{enumerate}
 \end{enumerate}
 
 Los resultados anteriormente descritos se han resumido en la tabla~\ref{tab:resultssummary}.
@@ -589,6 +655,7 @@ Los resultados anteriormente descritos se han resumido en la tabla~\ref{tab:resu
     Agente MCTS & Agente MCTS & 86 & 3 & 111 \\
     Agente NN01 & Bot & 47 & 3 & 50\\
     Agente NN01 & Agente MCTS & 0 & 0 & 100 \\
+    Agente NN01 & Agente NN02 & 42 & 7 & 41 \\
     \bottomrule
   \end{tabular}
 \end{table}
