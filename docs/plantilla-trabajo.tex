@@ -391,10 +391,10 @@ en concreto obtuvimos los siguientes resultados:
     acción aleatoria ganarían la mitad de las veces o no, por si en Otelo existiera un
     factor que favoreciera la victoria como obtener el primer turno.
     \item \textit{Resultados}\\
-    Con una muestra de 250 partidas generadas, obtuvimos los siguientes resultados:
+    Con una muestra de 200 partidas generadas, obtuvimos los siguientes resultados:
     \begin{itemize}
-      \item \textit{Victorias de Player 1}: Bot
-      \item \textit{Victorias de Player 2}: Bot
+      \item \textit{Victorias de Player 1}: 
+      \item \textit{Victorias de Player 2}: 
       \item \textit{Empates}: 
     \end{itemize}
   \end{enumerate}
@@ -409,14 +409,80 @@ en concreto obtuvimos los siguientes resultados:
       \item \textit{Valor de constante C}: $\frac{1}{\sqrt{2}}$
     \end{itemize}
     \item \textit{Objetivo}\\
-    En este experimento se quería determinar si dos jugadores que usaban siempre una
-    acción aleatoria ganarían la mitad de las veces o no, por si en Otelo existiera un
-    factor que favoreciera la victoria como obtener el primer turno.
+    Tras haber implementado el algoritmo MCTS con UCT en el agente, queríamos probarlo con
+    el que hemos tomado como el "jugador base", es decir, el bot que mueve aleatoriamente.
+    A priori, pensamos que el Agente MCTS debería ganar un porcentaje muy alto de las partidas.
     \item \textit{Resultados}\\
-    Con una muestra de 250 partidas generadas, obtuvimos los siguientes resultados:
+    Con una muestra de 200 partidas generadas, obtuvimos los siguientes resultados:
     \begin{itemize}
-      \item \textit{Victorias de Player 1}: Bot
-      \item \textit{Victorias de Player 2}: Bot
+      \item \textit{Victorias de Player 1}: 
+      \item \textit{Victorias de Player 2}: 
+      \item \textit{Empates}: 
+    \end{itemize}
+  \end{enumerate}
+
+\item \textit{Bot vs Agente MCTS}:
+  \begin{enumerate}
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Bot
+      \item \textit{Player 2}: Agente MCTS
+      \item \textit{Valor de constante C}: $\frac{1}{\sqrt{2}}$
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    Dado que el Agente MCTS era tan superior al bot, pensamos que darle cierta
+    ventaja al bot podría cambiar en algo el resultado. Además, queríamos tener
+    cubiertas todas las posibilidades, por lo que dejamos que el Bot fuera el
+    primero en realizar una jugada.
+    \item \textit{Resultados}\\
+    Con una muestra de 200 partidas generadas, obtuvimos los siguientes resultados:
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: 
+      \item \textit{Victorias de Player 2}: 
+      \item \textit{Empates}: 
+    \end{itemize}
+  \end{enumerate}
+
+\item \textit{Agente MCTS vs Agente MCTS}:
+  \begin{enumerate}
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Agente MCTS
+      \item \textit{Player 2}: Agente MCTS
+      \item \textit{Valor de constante C (para ambos)}: $\frac{1}{\sqrt{2}}$
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    Este experimento pretendía comprobar qué ocurría al enfrentar al Agente MCTS
+    contra sí mismo, a la vez que generar partidas para entrenar a la futura red
+    neuronal. Dado que los bots no mostraron ningún patrón extraño, simplemente
+    esperábamos encontrar un porcentaje casi idéntico de victorias para cada jugador.
+    \item \textit{Resultados}\\
+    Con una muestra de 200 partidas generadas, obtuvimos los siguientes resultados:
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: 
+      \item \textit{Victorias de Player 2}: 
+      \item \textit{Empates}: 
+    \end{itemize}
+  \end{enumerate}
+
+\item \textit{Red Neuronal vs Agente MCTS}:
+  \begin{enumerate}
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Agente MCTS
+      \item \textit{Player 2}: Red Neuronal
+      \item \textit{Valor de constante C}: $\frac{1}{\sqrt{2}}$
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    texto
+    \item \textit{Resultados}\\
+    Con una muestra de 200 partidas generadas, obtuvimos los siguientes resultados:
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: 
+      \item \textit{Victorias de Player 2}: 
       \item \textit{Empates}: 
     \end{itemize}
   \end{enumerate}
