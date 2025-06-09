@@ -21,7 +21,7 @@ class OthelloNet:
             self.model = load_model(import_path)        
 
     def prepare_data(self):
-        othello_games = pd.read_csv('agent/training/training_data_starter_nn.csv', delimiter=";")#'agent/training/training_data_starter_nn.csv', delimiter=";")
+        othello_games = pd.read_csv('agent/training/training_data_starter_nn.csv', delimiter=";")
 
         attributes = othello_games.drop(labels='current_player_won', axis=1)
         target = othello_games['current_player_won']
