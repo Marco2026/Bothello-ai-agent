@@ -370,19 +370,57 @@ Un ejemplo de pseudocódigo se puede observar en la
   \label{pcd:mergesort}
 \end{figure}
 
-
 \section{Resultados}
 
-En esta sección se detallarán tanto los experimentos realizados como los
-resultados conseguidos:
-\begin{itemize}
-\item Los experimentos realizados, indicando razonadamente la configuración
-  empleada, qué se quiere determinar, y como se ha medido.
-\item Los resultados obtenidos en cada experimento, explicando en cada caso lo
-  que se ha conseguido.
-\item Análisis de los resultados, haciendo comparativas y obteniendo
-  conclusiones.
-\end{itemize}
+Tras realizar el Bot, realizamos algunos experimentos para valorar la calidad del
+agente una vez incorporada la red neuronal.
+Primero comenzamos por generar partidas entre los distintos "jugadores" que teníamos,
+en concreto obtuvimos los siguientes resultados:
+
+\begin{enumerate}
+\item \textit{Bot vs Bot}:
+  \begin{enumerate}
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Bot
+      \item \textit{Player 2}: Bot
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    En este experimento se quería determinar si dos jugadores que usaban siempre una
+    acción aleatoria ganarían la mitad de las veces o no, por si en Otelo existiera un
+    factor que favoreciera la victoria como obtener el primer turno.
+    \item \textit{Resultados}\\
+    Con una muestra de 250 partidas generadas, obtuvimos los siguientes resultados:
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: Bot
+      \item \textit{Victorias de Player 2}: Bot
+      \item \textit{Empates}: 
+    \end{itemize}
+  \end{enumerate}
+
+\item \textit{Agente MCTS vs Bot}:
+  \begin{enumerate}
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Agente MCTS
+      \item \textit{Player 2}: Bot
+      \item \textit{Valor de constante C}: $\frac{1}{\sqrt{2}}$
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    En este experimento se quería determinar si dos jugadores que usaban siempre una
+    acción aleatoria ganarían la mitad de las veces o no, por si en Otelo existiera un
+    factor que favoreciera la victoria como obtener el primer turno.
+    \item \textit{Resultados}\\
+    Con una muestra de 250 partidas generadas, obtuvimos los siguientes resultados:
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: Bot
+      \item \textit{Victorias de Player 2}: Bot
+      \item \textit{Empates}: 
+    \end{itemize}
+  \end{enumerate}
+\end{enumerate}
 
 Se pueden hacer uso de tablas, como el ejemplo de la tabla~\ref{tab:ejemplo}.
 
