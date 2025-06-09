@@ -14,8 +14,8 @@ class NeuralNetwork(Enum):
 PLAYER_1 = PlayerMode(1)
 PLAYER_2 = PlayerMode(1)
 
-AGENT_1_NEURAL_NETWORK = NeuralNetwork(0)
-AGENT_2_NEURAL_NETWORK = NeuralNetwork(0)
+AGENT_1_NEURAL_NETWORK = None
+AGENT_2_NEURAL_NETWORK = None
 
 
-SIMULATIONS = 200
+SIMULATIONS = 10
