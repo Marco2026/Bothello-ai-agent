@@ -35,24 +35,22 @@
 
 \begin{document}
 
-\title{Título del trabajo (elegir uno original)}
+\title{La revolución de Othello, Bothello}
 
 \author{
+  \IEEEauthorblockN{Francisco Gago Vázquez}
+  \IEEEauthorblockA{
+    \textit{Dpto. Ciencias de la Computación e Inteligencia Artificial}\\
+    \textit{Universidad de Sevilla}\\
+    Sevilla, España\\
+    fragagvaz@alum.us.es}
+  \and
   \IEEEauthorblockN{Marco Antonio Herrera Luján}
   \IEEEauthorblockA{
     \textit{Dpto. Ciencias de la Computación e Inteligencia Artificial}\\
     \textit{Universidad de Sevilla}\\
     Sevilla, España\\
     marherluj@alum.us.es}
-  
-  \and
-  
-  \IEEEauthorblockN{Nombre y apellidos alumno 2}
-  \IEEEauthorblockA{
-    \textit{Dpto. Ciencias de la Computación e Inteligencia Artificial}\\
-    \textit{Universidad de Sevilla}\\
-    Sevilla, España\\
-    Correos electrónicos UVUS y de contacto (si distinto)}
 }
 
 \maketitle
@@ -60,185 +58,621 @@
 
 % Resumen
 \begin{abstract}
-  Escribir aquí dos párrafos indicando el objetivo principal del trabajo, y un
-  resumen de las conclusiones obtenidas. Cabe mencionar que este documento se
-  ha confeccionado siguiendo el formato de conferencias de IEEE (ver la guía
-  para autores para más información, existen plantillas para Word y \LaTeX).
-  Este documento se debe emplear como guía, se pueden añadir nuevas secciones
-  según sea necesario. Es importante dotarlo de un número razonable de
-  referencias bibliográficas.
+  Este trabajo tiene como objetivo construir un agente dotado de Inteligencia
+  artificial para el juego de mesa de ``Otelo'', el cual sea capaz de tomar
+  decisiones estratégicas y estudiar su efectividad en el juego. Para ello,
+  se han empleado herramientas modernas de inteligencia artificial,
+  en concreto una combinación entre el algoritmo de búsqueda en árboles de
+  Monte Carlo (MCTS) utilizando un enfoque de Upper Confidence Bound Tree (UCT)
+  combinado con la adición de aprendizaje supervisado por el uso de una Red Neuronal
+  que es capaz de inferir la probabilidad de victoria dada una posición en el juego.
+
+  Tras haber desarrollado agentes de distintos tipos, y haber estudiado su porcentaje
+  de victorias respecto al de los otros modelos, hemos llegado a la conclusión de que
+  el agente MCTS es mejor que un agente que implemente una red neuronal que no esté
+  bien entrenada.
 \end{abstract}
 
 
 % Palabras claves
 \begin{IEEEkeywords}
-  Inteligencia Artificial, otras palabras clave…
+  Inteligencia Artificial, Aprendizaje por Refuerzo, Aprendizaje Supervisado, 
+  Red Neuronal, Monte Carlo Tree Search, Othello, Reversi, Python, Pygame,
+  Upper Confidence Bound Tree.
 \end{IEEEkeywords}
 
 
 \section{Introducción}
 
-En esta sección se dedican varios párrafos para dar el contexto en el que se
-desarrolla el trabajo presentado. Normalmente se va desde lo más general a lo
-más preciso, para englobar el trabajo dentro de un ámbito concreto. Hay que
-recordar que se debe referenciar la información que se consiga de fuentes
-bibliográficas (artículos, libros, capítulos de libros, páginas web, apuntes,
-etc.). Para ello se añade el ítem correspondiente en el apartado de
-referencias, dotándolo de un número, y se añade la referencia al final de la
-frase o párrafo correspondiente~\cite{b1}. Si se realiza en Microsoft Word o
-LibreOffice, se puede hacer uso de \emph{referencias cruzadas} para actualizar
-la numeración de las referencias de forma automática en todo el documento.
+El siguiente trabajo se ha desarrollado en un entorno académico, con el objetivo 
+de mostrar el conocimiento aprendido por los miembros del grupo durante
+la asignatura ``Inteligencia Artificial'' para la evaluación del mismo, por lo que se han empleado algunas
+de las técnicas y algoritmos vistos en clase para resolver el problema planteado
+por el profesor. El trabajo está centrado en el universo del juego de mesa ``Otelo'',
+el cual hemos modelado en el lenguaje de programación Python con ayuda de la librería
+``Pygame''~\cite{b1}-~\cite{b2} apoyándonos en tutoriales de YouTube para realizar el código tanto
+del juego~\cite{b3}-~\cite{b5} como del menú~\cite{b6}-~\cite{b7} mostrado en (Fig. \ref{fig:menuimage}.). Una vez realizado el
+código tanto del juego como del menú, ya podíamos jugar una persona contra otra persona, pero,
+para acercarnos a nuestro objetivo de incluir agentes inteligentes, desarrollamos primero
+un bot que realizara jugadas aleatorias y a su vez desarrollamos la lógica necesaria para
+que al jugar contra el bot, la partida quedara registrada en un fichero csv con el texto
+completamente preparado con vista a entrenar una red neuronal en el futuro.
 
-Después vienen un par de párrafos para dar un poco más de detalle sobre el
-trabajo realizado. Hay que indicar la problemática o el objetivo que se marca,
-y cómo se ha enfocado la solución propuesta en este trabajo. Finalmente, el
-último párrafo se dedica a comentar la estructura del documento por secciones,
-como el que sigue.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\columnwidth]{MENU_IMAGE.jpg}
+  \caption{Imagen del menú en Pygame.}
+  \label{fig:menuimage}
+\end{figure}
 
+Una vez teníamos el bot y el sistema de generación de datos, nos informamos sobre cómo
+deberíamos implementar un agente~\cite{b8} para cumplir con el objetivo de atacar un problema de
+búsqueda adversaria en un entorno competitivo, en concreto, en un juego determinista, de dos jugadores,
+por turnos, con información perfecta y de suma cero (es decir, lo que es bueno para un jugador es un
+inconveniente para su oponente).
+
+Para crear el agente final, primero creamos un agente sin aprendizaje supervisado basándonos en el
+algoritmo de búsqueda en árboles de Monte Carlo (MCTS). Para construirlo, nos basamos en el pseudocódigo
+descrito en la investigación de Cameron B. Browne et al. sobre los métodos de búsqueda en árbol de
+Monte Carlo~\cite{b9} en el que se equilibran las fases de exploración de nodos que no tienen una fiabilidad
+alta sobre su resultado con la de explotación de nodos que sí han dado buenos resultados anteriormente.
+
+Por último, una vez terminamos el agente que implementa el algoritmo de Monte Carlo,
+lo pusimos a jugar contra sí mismo para generar partidas que alimentaran a la futura red neuronal y
+así poder usarla para sustituir el resultado que nos da la red dado un estado del tablero por la búsqueda
+por defecto que realiza el algoritmo de Monte Carlo.
+
+A lo largo del resto del documento, se describe el transcurso del proyecto, definiendo las técnicas
+empleadas y los trabajos relacionados en los preliminares, los métodos y algoritmos utilizados en la
+sección de metodología, los resultados obtenidos de la aplicación de algoritmos y métodos en la sección
+de resultados, el aprendizaje obtenido de los resultados y su estudio en la sección de conclusiones y
+por último las secciones de bibliografía y consultas a IA generativa.
+
+A continuación presentamos una breve tabla de contenido sobre el presente documento:
+
+\begin{enumerate}
+  \item Introducción
+  \item Preliminares
+  \begin{enumerate}
+    \item Métodos empleados
+    \item Trabajo Relacionado
+  \end{enumerate}
+  \item Metodología
+  \begin{enumerate}
+    \item Preparación del proyecto
+    \item Implementación de Otelo
+    \item Habilitación de bot
+    \item Creación del agente
+    \item Grabación de partidas
+    \item Simulación de partidas
+    \item Creación de la red neuronal
+  \end{enumerate}
+  \item Resultados
+  \begin{enumerate}
+    \item Bot vs Bot
+    \item Agente MCTS vs Bot
+    \item Agente MCTS vs Agente MCTS
+    \item Red Neuronal vs Bot
+    \item Red Neuronal vs Agente MCTS
+    \item Red Neuronal 1 vs Red Neuronal 2
+  \end{enumerate}
+  \item Conclusiones
+  \item Uso de la IA generativa
+  \item Bibliografía
+\end{enumerate}
 
 \section{Preliminares}
 
-En esta sección se hace una breve introducción de las técnicas empleadas y
-también trabajos relacionados, si los hay.
-
+Durante la realización del proyecto hemos utilizado dos técnicas principales:
+el algoritmo de búsqueda en árboles de Monte Carlo (MCTS) con enfoque Upper Confidence 
+Bound Tree (UCT) y el modelo de Inteligencia Artificial basado en aprendizaje supervisado 
+de las redes neuronales, tal y como se ha utilizado en proyectos similares con anterioridad,
+por ejemplo en juegos de mesa como el ``Go''~\cite{b10} parece que esta aproximación es 
+la que mejor funciona debido a la gran complejidad que posee el juego y que por tanto hace
+imposible la búsqueda de un camino óptimo.
 
 \subsection{Métodos empleados}
 
-Describir aquí los métodos y técnicas empleadas (búsqueda en espacio de
-estados, algoritmos genéticos, redes bayesianas, técnicas de clasificación,
-redes neuronales, etc.). Si es necesario, separarlos en distintas subsecciones
-dentro de Antecedentes.
+\begin{enumerate}
 
-Se pueden usar listas por puntos como sigue:
-\begin{itemize}
-\item Un punto: esto es un ejemplo de una lista.
-\item Otro punto.
-\end{itemize}
+  \item \textit{Upper Confidence Bound Tree}
 
-Por último, se debe hacer un uso correcto de las referencias bibliográficas,
-para que el lector pueda acceder a más información~\cite{b2}. Todas las
-referencias al final del documento deben ser citadas al menos una vez.
+  Nuestra aproximación para crear un agente capaz de hacer movimientos de forma estratégica
+  a lo largo de la partida de Otelo, se basa en el uso del algoritmo de búsqueda en árboles
+  de Monte Carlo (MCTS) con un enfoque Upper Confidence Bound Tree (UCT) como método para
+  equilibrar la exploración y la explotación. La fórmula de UCT es la siguiente:
+  \[
+  UCT = \bar{X}_j + 2C \sqrt{\frac{2 \ln{n}}{n_j}} 
+  \]
+  donde:
 
+  \begin{itemize}
+    \item $\bar{X}_j$: es la recompensa del nodo $j$ dividida entre la cantidad de veces que 
+    ha sido visitado.
+    \item $C$: es una constante que permite regular entre el término exploratorio y el término
+    explotador de la función UCT.
+    \item $n$: es el número de veces que el nodo actual (nodo padre) ha sido visitado.
+    \item $n_j$: es el número de veces que el hijo $j$ ha sido visitado.
+  \end{itemize}
+
+  La forma en la que $C$ sirve para controlar el equilibrio entre exploración y explotación
+  es la siguiente:
+  \begin{itemize}
+    \item $\bar{X}_j$: se corresponde con el término explotador, es decir, cuanto mayor sea la
+    recompensa acumulada por entrar al nodo, más probable será que se vuelva a visitar y cuantas
+    más veces se haya visitado el nodo, más se favorecerá ir a otros nodos que no se hayan visitado
+    tantas veces.
+    \item $C \sqrt{\frac{2 \ln{n}}{n_j}}$: es el término exploratorio, el cual favorece que se visiten
+    nodos que no han sido visitados tantas veces (por lo que no se sabe aún si darán buenas recompensas
+    o no). El término disminuye cuanto mayor sea $n_j$, es decir, cuanto más se haya explorado ese nodo, mientras
+    que el logaritmo del numerador asegura que la exploración decrezca lentamente a medida que se visita al
+    padre. La constante, por lo tanto, sirve para controlar la importancia que se le da a la exploración
+    frente a la explotación.
+  \end{itemize}
+
+  \item \textit{Monte Carlo Tree Search}
+  
+  El algoritmo de búsqueda en árboles de Monte Carlo ha probado ser una gran aproximación para encontrar
+  la jugada óptima en juegos con información perfecta y de suma cero como el ajedrez o el Go.
+  
+  Este algoritmo se basa en la realización de 4 pasos diferenciados como se muestra en la Fig. 1.:
+
+  \begin{enumerate}
+  \item \textit{Selección}: Se comienza en la raíz del árbol de búsqueda y si el nodo no está expandido
+  se expande. Si está expandido, devolvemos el mejor hijo según el cálculo del UCT sobre todos sus hijos.
+  \item \textit{Expansión}: Teniendo un nodo no expandido, se elige una acción de las posibles acciones
+  (es decir, jugadas) que se pueden realizar en ese estado del juego y se retorna el nuevo nodo. Si el nodo
+  estaba expandido previamente, se llama a la función \textbf{best\_child}.
+  \item \textit{Simulación}: Ahora se realizan movimientos en un tablero simulado siguiendo la política
+  pertinente. En un agente que implementara el MCTS sin modificaciones, se utilizaría la política por
+  defecto o \textbf{default\_policy}, que en nuestro caso genera acciones de forma aleatoria hasta llegar
+  a un nodo terminal. El agente que hemos implementado finalmente, sin embargo, utiliza una red neuronal
+  para inferir la probabilidad de victoria o derrota dado ese nodo.
+  \item \textit{Retropropagación}: Una vez obtenido el resultado de la simulación, se actualizan los valores
+  tanto de recompensa como de número de visitas por nodo.
+  \end{enumerate} 
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{Monte-Carlo-Tree-Search-steps-5.png}
+    \caption{Esquema de funcionamiento del algoritmo MCTS~\cite{b11}.}
+    \label{fig:montecarlo}
+  \end{figure}
+
+  Todos estos pasos se realizan dado un "presupuesto computacional", que normalmente es medido en tiempo
+  (nuestro caso) o en número de iteraciones máximo. Nosotros hemos elegido otorgar 1 segundo
+  para realizar los pasos anteriormente descritos.
+
+  \item \textit{Neural Network}
+  
+  La red neuronal es un modelo de Inteligencia Artificial basada en aprendizaje supervisado. Para utilizarla,
+  creamos un módulo encargado de generar ``datos de entrenamiento'' dentro de nuestro proyecto. Cada vez que
+  se ejecuta una partida, se puede activar una opción que guarda cada estado $S$ de la partida con los
+  siguientes datos:
+
+  \begin{itemize}
+    \item \textit{casillas}: se corresponden con cada una de las casillas del tablero. Como es de 8 filas
+    y 8 columnas, van desde $a1,a2, \dots,h8$. En cada casilla se encuentran los siguientes valores:
+
+    \begin{itemize}
+      \item $0$: si en esa casilla no hay ninguna pieza.
+      \item $1$: si en esa casilla hay una pieza blanca.
+      \item $2$: si en esa casilla hay una pieza negra.
+    \end{itemize}
+
+    \item \textit{current\_player\_won}: se corresponde con los siguientes valores:
+    
+    \begin{itemize}
+      \item $1$: si el jugador que estaba jugando en ese turno terminó ganando la partida.
+      \item $0$: si la partida terminó en empate.
+      \item $-1$: si el jugador que estaba jugando en ese turno terminó perdiendo la partida.
+    \end{itemize}
+
+  \end{itemize}
+
+  Tras hacer que el agente de Monte Carlo jugara contra sí mismo para generar datos suficientes, creamos
+  una red neuronal que, dado un nuevo estado de la partida (es decir, el estado del tablero), infiere la
+  probabilidad de ganar o perder la partida en el rango $[-1,1]$.
+
+\end{enumerate}
 
 \subsection{Trabajo Relacionado}
 
-Se puede realizar un recorrido en la literatura sobre trabajos anteriores que
-estén relacionados y que sea por tanto interesante comentar aquí. Por supuesto,
-añadir las referencias bibliográficas correspondientes.
+El enfoque de utilizar el algoritmo de MCTS junto con una red neuronal para inferir la política no es
+algo novedoso, se ha investigado en profundidad sobre el tema.
 
+En el artículo ``\textit{Mastering the game of Go with deep neural networks and tree search}''~\cite{b10}
+se explica cómo se entrenó al programa \textbf{AlphaGo} para llegar, por primera vez en el juego (el cual es
+de bastante mayor complejidad que el Otelo e incluso que el ajedrez) a derrotar al campeón mundial de Go
+y a todos los programas anteriormente presentados para competir en el juego de mesa.
 
 \section{Metodología}
 
-Esta sección se dedica a la descripción del método implementado en el trabajo.
-Esta parte es la correspondiente a lo realmente desarrollado en el trabajo, y
-se puede emplear pseudocódigo (nunca código), esquemas, tablas, etc.
+La metodología de trabajo que hemos seguido a lo largo del desarrollo del proyecto ha sido la siguiente:
+
+\begin{enumerate}
+\item \textit{Preparación del proyecto:} creamos el repositorio
+  en GitHub y construimos el entorno virtual de Python para el proyecto.
+  Todas las dependencias necesarias se encuentran en el fichero
+  \texttt{requirements.txt}.
+\item \textit{Implementación de Otelo:} utilizando la librería Pygame,
+  implementamos el juego de mesa Otelo, consiguiendo que dos personas
+  puedan jugar entre sí.
+  \begin{enumerate}
+  \item \textit{Inicialización de juego:} creamos el módulo \texttt{main} 
+    permitiendo abrir el juego y mostrar el tablero, y los módulos \texttt{game\_const},
+    que establece constantes básicas del juego, como las dimensiones de la pantalla o 
+    el tamaño del tablero y \texttt{game\_var}, que establece parámetros variables dentro
+    del juego.
+  \item \textit{Colocación de piezas:} implementamos la clase \texttt{Board}
+    y la clase \texttt{Piece}, con las funcionalidades necesarias para que los jugadores
+    colocaran una ficha al clicar en cada casilla del tablero.
+  \item \textit{Aplicación de reglas de Otelo:} desarrollamos toda la lógica necesaria
+    para ceñirnos a las reglas de Otelo, como la captura de piezas del oponente,
+    la validación de movimientos o el cambio de turno.
+  \end{enumerate} 
+\item  \textit{Habilitación de bot:} programamos el juego para permitir partidas contra un
+ bot controlado por el sistema, el cual escoge sus movimientos de  forma completamente aleatoria.
+  \begin{enumerate}
+  \item \textit{Incorporación de modos de juego:} como complemento a la creación del bot,
+  añadimos la posibilidad de seleccionar entre distintos modos de juego. 
+  De este modo, el usuario puede optar por jugar contra otro jugador, enfrentarse al bot, 
+  o bien observar una partida controlada íntegramente por el sistema.
+  \end{enumerate}
+
+\item \textit{Creación del agente:} incorporamos un agente capaz de tomar decisiones
+ estratégicas utilizando el algoritmo Monte Carlo Tree Search (MCTS) siguiendo el pseudocódigo
+ explicado en (Fig. ~\ref{pcd:uct_pseudocodigo}.) basado en el explicado en ~\cite{b9}.
+  \begin{enumerate}
+  \item \textit{Enfoque UCT:} se utilizó la variante Upper Confidence Bound Tree (UCT) 
+  con el fin de equilibrar de manera efectiva la exploración y la explotación durante la búsqueda. 
+  Esto permite que el algoritmo seleccione tanto las acciones con mejores resultados históricos
+  como aquellas opciones menos exploradas.
+  \item \textit{Elección de rol de ambos jugadores:} mejoramos la selección de modos de juego añadiendo
+  la selección independiente del controlador asignado a cada jugador (humano, bot o agentes 
+  con distintas políticas). De este modo, el usuario puede decidir quién controla las fichas negras 
+  y quién las blancas, habilitando así todas las combinaciones posibles entre tipos de jugador.
+  \end{enumerate}
+
+\item \textit{Grabación de partidas:} añadimos una funcionalidad para almacenar registros 
+  de las partidas jugadas en un fichero csv, de modo que posteriormente se pudiera utilizar
+  para entrenar una red neuronal. Estos datos se pueden crear de manera opcional, en un 
+  archivo \texttt{.csv} que se genera en la carpeta \texttt{agent/training/games}, y toma el
+  nombre según el tipo de partida que se grabe. Por tanto, si se juega una partida en la 
+  que un bot juega con las fichas negras y un agente en modo UCT (sin red neuronal) controla
+  las blancas, se guardará en \texttt{agent/training/games/BOTvsAGENT\_UCT.csv} 
+  Posteriormente, todos estos ficheros se copiarán y se trasladarán a otro archivo que para entrenar la red.
+
+\item \textit{Simulación de partidas:}  Para grabar datos de entrenamiento de manera automatizada,
+  implementamos un sistema de generación de partidas automáticas. Con la generación de partidas,
+  logramos dotar a la red neuronal de una base de datos sólida para su entrenamiento.
+  
+\item \textit{Creación de la red neuronal:} Diseñamos una red neuronal capaz de predecir la probabilidad 
+  de victoria o derrota en función de la distribución del tablero. Esta red se entrena utilizando los 
+  datos generados por las partidas simuladas, lo que permite al agente aprender de las estrategias y 
+  patrones de juego.
+
+  Para la creación de la red hemos utilizado un optimizador $SGD$ y una estructura con:
+  \begin{itemize}
+    \item Capa inicial: 64 neuronas (una por cada posición del tablero)
+    \item Capa intermedia: 32 neuronas y función de activación sigmoide
+    \item Capa final: 1 neurona y función de activación de tangente hiperbólica (para obtener resultado en el intervalo $[-1,1]$)
+  \end{itemize}
+
+  Como hiperparámetros, hemos utilizado:
+
+  \begin{equation}
+  \label{eq:tasaaprendizaje_mse}
+   \eta = 0,01 \qquad \text{MSE} = 1
+  \end{equation}
+  \begin{equation}
+  \label{eq:epochs_bach}
+   \text{epochs} = 800  \qquad \text{batch} = 256
+  \end{equation}
+
+  \begin{enumerate}
+  \item \textit{Entrenamiento de la red:} El entrenamiento se realizó con un conjunto de datos de partidas
+  simuladas, donde por cada turno se guardaba la disposición del tablero y el resultado en la partida del 
+  jugador protagonista en ese turno.
+  \item \textit{Separación de distintas redes:} Una vez entrenamos la red, almacenamos los resultados del entrenamiento en 
+  \texttt{bothello\_first\_training.h5}, con el fin de poder reutilizarla en el futuro. Esto nos
+  permitió almacenar distintas versiones de la red y poder enfrentarlas entre sí para ver cuál es la más efectiva.
+  \item \textit{Mejora continua de la red:} A partir de la primera red, generamos nuevas partidas y las utilizamos para
+  entrenar una versión mejorada de la red. Este proceso es iterativo, y se podrá repetir tantas veces como se desee,
+  con el fin de alcanzar un modelo mejorado que maximice la probabilidad de victoria.
+  \end{enumerate}
+  
+\end{enumerate}
+
+
 
 \begin{figure}
-  \centering
-  \includegraphics{ejemplo}
-  \caption{Ejemplo de un pie de figura. Imagen con derechos Creative Commons}
-  \label{fig:ejemplo}
-\end{figure}
+  \begin{pseudo}*
+    \hd{\fn{búsqueda\_UCT}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un estado inicial y (opcionalmente) una red neuronal} \\*
+    \multicolumn{2}{l}{\textbf{Salida}: una acción recomendada} \\
+    \textnormal {crear nodo} raíz\textnormal{ con el estado inicial}\\
+    \textnormal{establecer tiempo} \\ 
+    \textnormal{mientras quede tiempo} \\+
+      \textnormal{seleccionar una hoja mediante la} política \textnormal{del árbol} \\
+      si no hay red neuronal \\+
+        \textnormal{estimar recompensa simulando} aleatoriamente \\-
+      si hay red neuronal \\+
+        \textnormal{estimar recompensa mediante} la política de la red \\-
+      propagar \textnormal{la recompensa hacia la raíz} \\-
+    \textnormal{devolver la} acción \textnormal{asociada al mejor} hijo \textnormal{de la raíz}
+  \end{pseudo}
 
-A continuación, un ejemplo de uso de listas numeradas:
+  \begin{pseudo}*
+    \hd{\fn{política\_del\_árbol}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un nodo del árbol} \\*
+    \multicolumn{2}{l}{\textbf{Salida}: un nodo} \\
+    \textnormal{mientras el} nodo no \textnormal{sea} terminal \\+
+      \textnormal{si el nodo tiene acciones} sin explorar \\+
+        expandir \textnormal{el nodo y devolver el nuevo hijo} \\-
+      \textnormal{si todas las acciones ya han sido} exploradas \\+
+        \textnormal{avanzar al nodo hijo con mejor valor} \\-
+    \textnormal{devolver el nodo}
+  \end{pseudo}
+
+  \begin{pseudo}*
+    \hd{\fn{mejor\_hijo}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un nodo y la constante de exploración} \\*
+    \multicolumn{2}{l}{\textbf{Salida}: el hijo con mayor valor de exploración} \\
+     \textnormal{calcular el valor de cada hijo usando la fórmula} UCB \\
+     \textnormal{devolver el hijo con mayor valor}
+  \end{pseudo}
+
+  \begin{pseudo}*
+    \hd{\fn{política\_aleatoria}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un estado de juego} \\*
+    \multicolumn{2}{l}{\textbf{Salida}: una recompensa simulada} \\
+     \textnormal{mientras el} estado no  \textnormal{sea} terminal \\+
+       \textnormal{elegir una acción} aleatoria \\
+       aplicar  \textnormal{la acción al estado} \\-
+     \textnormal{calcular y devolver la recompensa final}
+  \end{pseudo}
+
+  \begin{pseudo}*
+    \hd{\fn{política\_de\_red}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un estado y una red neuronal} \\*
+    \multicolumn{2}{l}{\textbf{Salida}: una recompensa estimada} \\
+    \textnormal{copiar y parsear el estado} \\
+    \textnormal{estimar la} recompensa \textnormal{de la red} \\
+    \textnormal{devolver el valor de salida como recompensa estimada}
+  \end{pseudo}
+
+  \begin{pseudo}*
+    \hd{\fn{retropropagación}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un nodo hoja y una recompensa} \\
+      \textnormal{mientras el} nodo no \textnormal{sea} nulo \\+
+      incrementar\textnormal{ el número de }visitas \\
+      acumular \textnormal{la }recompensa \\
+      avanzar \textnormal{al nodo padre} \\-
+  \end{pseudo}
+
+  \caption{Algoritmo de búsqueda UCT con red neuronal opcional}
+  \label{pcd:uct_pseudocodigo}
+\end{figure}
+\section{Resultados}
+
+Tras implementar el Bot, realizamos algunos experimentos para valorar la calidad del
+agente una vez incorporada la red neuronal.
+Primero comenzamos por generar partidas entre los distintos "jugadores" que teníamos,
+en concreto obtuvimos los siguientes resultados:
+
 \begin{enumerate}
-\item\label{item:dos-alumnos} \textit{Trabajos con dos alumnos:} poner nombre y
-  apellidos completos de cada uno, y correos electrónicos de contacto (a ser
-  posible de la Universidad de Sevilla). El orden de los alumnos se fijará por
-  orden alfabético según los apellidos.
-\item \textit{Trabajo con un autor:} cambiar la cabecera de la siguiente manera
+\item \textit{Bot vs Bot}:
   \begin{enumerate}
-  \item \textit{Una sola columna:} solo se debe especificar un alumno.
-  \item \textit{Información a añadir:} la misma que la especificada en el
-    punto~\ref{item:dos-alumnos}.
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Bot
+      \item \textit{Player 2}: Bot
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    En este experimento se quería determinar si dos jugadores que usaban siempre una
+    acción aleatoria ganarían la mitad de las veces o no, por si en Otelo existiera un
+    factor que favoreciera la victoria como obtener el primer turno.
+    \item \textit{Resultados}\\
+    Con una muestra de 200 partidas generadas, obtuvimos los siguientes resultados (Fig. ~\ref{fig:botvsbot}.):
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: $95$
+      \item \textit{Victorias de Player 2}: $93$
+      \item \textit{Empates}: $12$
+    \end{itemize}
+    La conclusión es que simplemente colocando piezas al azar hay un 50\% de probabilidad
+    de ganar o perder.
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\columnwidth]{BOTvsBOT.png}
+      \caption{Resultados de Bot contra Bot.}
+      \label{fig:botvsbot}
+    \end{figure}
+    
+  \end{enumerate}
+
+\item \textit{Agente MCTS vs Bot}:
+  \begin{enumerate}
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Agente MCTS
+      \item \textit{Player 2}: Bot
+      \item \textit{Valor de constante C}: $\frac{1}{\sqrt{2}}$
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    Tras haber implementado el algoritmo MCTS con UCT en el agente, queríamos probarlo con
+    el que hemos tomado como el "jugador base", es decir, el bot que mueve aleatoriamente.
+    A priori, pensamos que el Agente MCTS debería ganar un porcentaje muy alto de las partidas.
+    \item \textit{Resultados}\\
+    Con una muestra de 200 partidas generadas, obtuvimos los siguientes resultados (Fig. ~\ref{fig:agentvsbot}.):
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: $200$
+      \item \textit{Victorias de Player 2}: $0$
+      \item \textit{Empates}: $0$
+    \end{itemize}
+
+    Como era de esperar, el agente gana todas las veces al bot, ya que sigue una estrategia
+    mejor que jugar aleatoriamente para ganar.
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\columnwidth]{AGENT_MCTSvsBOT.png}
+      \caption{Resultados de Agente MCTS contra Bot.}
+      \label{fig:agentvsbot}
+    \end{figure}
+
+  \end{enumerate}
+
+\item \textit{Agente MCTS vs Agente MCTS}:
+  \begin{enumerate}
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Agente MCTS
+      \item \textit{Player 2}: Agente MCTS
+      \item \textit{Valor de constante C (para ambos)}: $\frac{1}{\sqrt{2}}$
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    Este experimento pretendía comprobar qué ocurría al enfrentar al Agente MCTS
+    contra sí mismo, a la vez que generar partidas para entrenar a la futura red
+    neuronal. Esperábamos encontrar un porcentaje muy similar de victorias para cada jugador.
+    \item \textit{Resultados}\\
+    Con una muestra de 200 partidas generadas, obtuvimos los siguientes resultados (Fig. ~\ref{fig:agentvsagent}.):
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: 86
+      \item \textit{Victorias de Player 2}: 111
+      \item \textit{Empates}: 3
+    \end{itemize}
+    Para sorpresa nuestra, encontramos que el Agente que jugaba en segundo turno tenía
+    cierta ventaja, ya que cuantas más partidas generábamos más parecía acentuarse este
+    comportamiento. Creemos que es debido a que un alto porcentaje de las partidas de
+    Otelo son de un turno por cada jugador (teniendo en cuenta que si el otro no puede
+    poner una ficha vuelve a ser tu turno), por lo que el jugador que termina la partida
+    tendría a priori más fichas para volver de su color.
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\columnwidth]{AGENT_MCTSvsAGENT_MCTS.png}
+      \caption{Resultados de Agente MCTS contra Agente MCTS.}
+      \label{fig:agentvsagent}
+    \end{figure}
+  \end{enumerate}
+
+  \item \textit{Red Neuronal vs Bot}:
+    \begin{enumerate}
+      \item \textit{Configuración}\\
+      Para este experimento contamos con la siguiente configuración:
+      \begin{itemize}
+        \item \textit{Player 1}: Red Neuronal
+        \item \textit{Player 2}: Bot
+        \item \textit{Valor de constante C}: $\frac{1}{\sqrt{2}}$
+      \end{itemize}
+      \item \textit{Objetivo}\\
+      Tras su primer entrenamiento, queríamos probar cómo se comportaba la red contra el Bot.
+      Esperábamos que obtuviera un resultado mejor que el Bot, ya que el Bot ejecuta una acción
+      completamente aleatoria.
+      \item \textit{Resultados}\\
+      Con una muestra de 100 partidas generadas, obtuvimos los siguientes resultados (Fig. ~\ref{fig:agentnn01vsbot}.):
+      \begin{itemize}
+        \item \textit{Victorias de Player 1}: $47$
+        \item \textit{Victorias de Player 2}: $50$
+        \item \textit{Empates}: $3$
+      \end{itemize}
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=\columnwidth]{AGENT_NN01vsBOT.png}
+        \caption{Resultados de Agente con Red Neuronal 1 contra Bot.}
+        \label{fig:agentnn01vsbot}
+      \end{figure}
+      Los resultados nos dieron a entender que la red neuronal era prácticamente igual al Bot
+      en términos de porcentaje de victoria, lo que indica la necesidad de un entrenamiento mejorado.
+    \end{enumerate}
+
+\item \textit{Red Neuronal vs Agente MCTS}:
+  \begin{enumerate}
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Red Neuronal
+      \item \textit{Player 2}: Agente MCTS
+      \item \textit{Valor de constante C}: $\frac{1}{\sqrt{2}}$
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    Tras haber probado la red neuronal contra el Bot, queríamos ver cómo se comportaba
+    contra el agente, para ver si tenía más porcentaje de victoria que el Bot.
+    \item \textit{Resultados}\\
+    Con una muestra de 100 partidas generadas, obtuvimos los siguientes resultados (Fig. ~\ref{fig:agentnn01vsagent}.):
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: $0$
+      \item \textit{Victorias de Player 2}: $100$
+      \item \textit{Empates}: $0$
+    \end{itemize}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\columnwidth]{AGENT_NN01vsAGENT_MCTS.png}
+      \caption{Resultados de Agente con Red Neuronal 1 contra Agente MCTS.}
+      \label{fig:agentnn01vsagent}
+    \end{figure}
+    Los resultados no fueron nada positivos, lo que es una indicación clara de que debemos
+    mejorar el entrenamiento de la red para conseguir un porcentaje mayor.
+
+  \end{enumerate}
+
+  \item \textit{Red Neuronal 1 vs Red Neuronal 2}:
+  \begin{enumerate}
+    \item \textit{Configuración}\\
+    Para este experimento contamos con la siguiente configuración:
+    \begin{itemize}
+      \item \textit{Player 1}: Red Neuronal 1
+      \item \textit{Player 2}: Red Neuronal 2
+      \item \textit{Iteraciones para red 1}: $800$
+      \item \textit{Iteraciones para red 2}: $1500$
+    \end{itemize}
+    \item \textit{Objetivo}\\
+    Entrenamos a la red con más datos que la vez anterior (incluyendo las partidas que
+    ella misma realizó contra el Bot y el Agente MCTS). Esperábamos que la red se comportara
+    mejor que la vez anterior al haber recibido más datos y más iteraciones de entrenamiento.
+    \item \textit{Resultados}\\
+    Con una muestra de 100 partidas generadas, obtuvimos los siguientes resultados (Fig. ~\ref{fig:agentnn01vsagentnn02}.):
+    \begin{itemize}
+      \item \textit{Victorias de Player 1}: $42$
+      \item \textit{Victorias de Player 2}: $41$
+      \item \textit{Empates}: $7$
+    \end{itemize}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\columnwidth]{AGENT_NN01vsAGENT_NN02.png}
+      \caption{Resultados de Agente con Red Neuronal 1 contra Agente con Red Neuronal 2.}
+      \label{fig:agentnn01vsagentnn02}
+    \end{figure}
+    Los resultados fueron algo decepcionantes, ya que tras entrenar de nuevo la red obtuvimos prácticamente
+    el mismo resultado.
+
   \end{enumerate}
 \end{enumerate}
 
-Las figuras se deben mencionar en el texto, como la
-\figurename~\ref{fig:ejemplo}. También se pueden añadir ecuaciones, como la
-ecuación~\eqref{eq:ejemplo}.
-
-\begin{equation}
-  \label{eq:ejemplo}
-  a + b = \gamma
-\end{equation}
-
-Un ejemplo de pseudocódigo se puede observar en la
-\figurename~\ref{pcd:mergesort}.
-
-\begin{figure}
-  \begin{pseudo}*
-    \hd{\fn{mergesort}}(V) \\*
-    \multicolumn{2}{l}{\textbf{Entrada}: un vector \( V \)} \\*
-    \multicolumn{2}{l}{\textbf{Salida}: un vector con los elementos de \( V \)
-      en orden} \\
-    si \( V \) \textnormal{es unitario} entonces \\+
-    devolver \( V \) \\-
-    si no entonces \\+
-    \( V_{1} \leftarrow \textnormal{primera mitad de } V\) \\
-    \( V_{2} \leftarrow \textnormal{segunda mitad de } V\) \\
-    \( V_{1} \leftarrow \pr{mergesort}(V_{1}) \) \\
-    \( V_{2} \leftarrow \pr{mergesort}(V_{2}) \) \\
-    devolver \fn{mezcla}(V_{1}, V_{2})
-  \end{pseudo}
-  
-  \begin{pseudo}*
-    \hd{\fn{mezcla}}(V_{1}, V_{2}) \\*
-    \multicolumn{2}{l}{%
-      \textbf{Entrada}: dos vectores \( V_{1} \) y \( V_{2} \) ordenados
-    } \\*
-    \multicolumn{2}{l}{%
-      \textbf{Salida}: un vector con los elementos de \( V_{1} \) y \( V_{2} \)
-      en orden
-    } \\
-    si \( V_{1} \) \textnormal{no tiene elementos} entonces \\+
-    devolver \( V_{2} \) \\-
-    si no si \( V_{2} \) \textnormal{no tiene elementos} entonces \\+
-    devolver \( V_{1} \) \\-
-    si no entonces \\+
-    \( x_{1} \leftarrow \textnormal{primer elemento de } V_{1} \) \\
-    \( x_{2} \leftarrow \textnormal{primer elemento de } V_{2} \) \\
-    si \( x_{1} \leq x_{2} \) entonces \\+
-    \( x \leftarrow x_{1} \) \\
-    \textnormal{quitar el primer elemento de} \( V_{1} \) \\-
-    si no entonces \\+
-    \( x \leftarrow x_{2} \) \\
-    \textnormal{quitar el primer elemento de} \( V_{2} \) \\-
-    \( V \leftarrow \fn{mezcla}(V_{1}, V_{2}) \) \\
-    \textnormal{añadir} \( x \)
-    \textnormal{como primer elemento de} \( V \) \\
-    devolver \( V \)
-  \end{pseudo}
-  \caption{Algoritmo de ordenación \texttt{MergeSort}}
-  \label{pcd:mergesort}
-\end{figure}
-
-
-\section{Resultados}
-
-En esta sección se detallarán tanto los experimentos realizados como los
-resultados conseguidos:
-\begin{itemize}
-\item Los experimentos realizados, indicando razonadamente la configuración
-  empleada, qué se quiere determinar, y como se ha medido.
-\item Los resultados obtenidos en cada experimento, explicando en cada caso lo
-  que se ha conseguido.
-\item Análisis de los resultados, haciendo comparativas y obteniendo
-  conclusiones.
-\end{itemize}
-
-Se pueden hacer uso de tablas, como el ejemplo de la tabla~\ref{tab:ejemplo}.
+Los resultados anteriormente descritos se han resumido en la tabla~\ref{tab:resultssummary}.
 
 \begin{table}
-  \caption{Ejemplo de tabla}
-  \label{tab:ejemplo}
+  \caption{Resumen de resultados}
+  \label{tab:resultssummary}
   \centering
-  \begin{tabular}{ccc}
+  \begin{tabular}{ccccc}
     \toprule
-    A & B & C \\
+    Jugador 1 & Jugador 2 & Victorias J1 & Empate & Victorias J2 \\
     \midrule
-    1 & 2 & 3 \\
-    4 & 5 & 6 \\
+    Bot & Bot & 95 & 12 & 93 \\
+    Agente MCTS & Bot & 200 & 0 & 0 \\
+    Agente MCTS & Agente MCTS & 86 & 3 & 111 \\
+    Agente NN01 & Bot & 47 & 3 & 50\\
+    Agente NN01 & Agente MCTS & 0 & 0 & 100 \\
+    Agente NN01 & Agente NN02 & 42 & 7 & 41 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -246,22 +680,107 @@ Se pueden hacer uso de tablas, como el ejemplo de la tabla~\ref{tab:ejemplo}.
 
 \section{Conclusiones}
 
-Finalmente, se dedica la última sección para indicar las conclusiones obtenidas
-del trabajo. Se puede dedicar un párrafo para realizar un resumen sucinto del
-trabajo, con los experimentos y resultados. Seguidamente, uno o dos párrafos
-con conclusiones. Se suele dedicar un párrafo final con ideas de mejora y
-trabajo futuro.
+Este trabajo ha sido nuestra primera aproximación a un trabajo real en el que se
+implementa la Inteligencia Artificial. Desde el principio estudiamos qué era lo
+que teníamos que realizar y dividimos el trabajo en varios hitos:
+\begin{itemize}
+  \item Crear una versión funcional del juego
+  \item Crear un Bot contra el que poder jugar
+  \item Crear un Agente que implemente el algoritmo de MCTS con UCT
+  \item Crear una Red Neuronal para sustituir \textbf{default\_policy} en el algoritmo MCTS
+\end{itemize}
+La versión del juego realizada en Pygame, a pesar del trabajo extra, resultó
+ser estética y funcionalmente mejor que la versión en consola. El primer bot no
+fue tan complicado de hacer como el hecho de poder tener dos jugadores independientes,
+aunque a la hora de implementar el algoritmo MCTS con enfoque UCT sí tuvimos más
+complicaciones (entender el algoritmo, implementar el código, entender cómo Python
+maneja self, etc.). Por último, con el entrenamiento de la red neuronal aprendimos
+de forma aproximada cómo se puede utilizar un modelo de aprendizaje supervisado en un
+proyecto real. También vimos que al enfrentarnos a un problema real era más complicado
+obtener buenas predicciones, ya que los conjuntos de datos vistos en clase estaban
+más preparados para obtener un buen resultado a diferencia de los nuestros al ser generados
+de manera automática durante el juego.
 
+En cuanto a los resultados, algunos fueron predecibles, como los obtenidos de los Bots,
+aunque otros fueron más sorprendentes, en concreto aquellos realizados con los agentes
+y cómo algo que a priori puede estar oculto (ventaja para el jugador hace el segundo
+movimiento) se hace evidente realizando un análisis de este tipo.
+
+Fue interesante leer estudios anteriores e informarse de los avances y la investigación
+realizada por otras personas. Estudiar y entender el algoritmo directamente de las fuentes
+~\cite{b8}-~\cite{b9} en lugar de otras fuentes a las que estamos más acostumbrados (YouTube,
+IA generativa) supuso un reto y tuvo como resultado un mayor aprendizaje del trabajo que
+estábamos realizando.
+
+En cuanto al resultado general del proyecto, tenemos varias ideas de mejora futuras, como 
+entrenar de mejor forma la red neuronal añadiendo valores al csv, como el jugador que está
+jugando en ese turno, o el número de piezas que tiene cada jugador, entre otras, y realizar
+modificaciones al módulo de generación de partidas y análisis de datos para que sea aún
+más robusto.
+
+\section{Uso de la IA generativa}
+
+Durante el transcurso del proyecto, nos propusimos utilizar la Inteligencia
+Artificial Generativa para cuestiones realmente necesarias, enfocando nuestras
+fuentes a la hora de aprender a realizar cada una de las partes del trabajo en
+fuentes de Internet (tutoriales, páginas web, documentación de librerías, etc.)
+y en las lecturas recomendadas por el profesor evaluador del trabajo. Todas estas 
+fuentes están incluidas dentro de la bibliografía.
+
+En cuanto a los prompts utilizados (todos a ChatGPT), fueron los siguientes:
+
+\begin{itemize}
+\item Quiero hacer un juego en pygame, y el tablero consiste de cuadrados 
+separados por lineas negras. Me preguntaba cual podria ser la mejor forma 
+de recrear el tablero, si usar un asset verde del color del tablero y pintar 
+de alguna forma las lineas
+\item Crea una imagen de un asset para piezas de Reversi o Otelo, quiero una 
+pieza blanca y una pieza negra en alta resolucion sobre un fondo verde sólido, 
+para posteriormente recortarlas
+\item Quiero modificar el valor de una constante que defino en otro archivo 
+en mi juego de pygame en python. La importo a mi clase principal y cuando quiero 
+cambiar su valor, obtengo lo siguiente: \\ \\ UnboundLocalError: cannot access 
+local variable 'MODE' where it is not associated with a value
+\item Estoy realizando un algoritmo basado en monte carlo tree search para 
+jugar a un juego de mesa. Lo que no entiendo es cómo aprende montecarlo. Sé 
+que va actualizando los nodos y guardando los valores, pero mi duda va hacia 
+la implementación, ya que si lo guardo en memoria, cuando acabe la partida 
+perdería toda esa información, por lo que no sé si esa información debería 
+almacenarse de algún modo y, de ser así, cómo sería.
+\item Estoy teniendo problemas con esta clase en la que quiero implementar el 
+metodo de busqueda de montecarlo en arboles, creo que me he confundido con la 
+diferencia entre nodo y estado, te adjunto la clase.
+\item Teniendo en cuenta lo que me dijiste, tengo algún problema con la clase 
+Board, ya que a veces se ejecuta el tablero desde el punto de vista del agente 
+y otras veces se ejecuta desde el punto de vista de la persona que hace el movimiento. 
+He tenido varios problemas con el constructor, ya que a veces inicializa bien 
+los valores, pero cuando quiero usar la clase con montecarlo tengo problemas. 
+Te adjunto la clase.
+\item Te voy a enviar una red neuronal. La idea es que un agente la llame para 
+que haga predicciones, pero no se si esta es la forma correcta de hacerlo 
+(organización de código, tener cuidado en que si hay dos agentes no se sobreescriban 
+los datos de ambos objetos, etc)
+\item Puedes explicarme en mayor detalle qué es el upper bound confidence tree
+en el contexto de Monte Carlo Tree Search algorithm?
+\item Estoy haciendo un proyecto y quiero sacar gráficas de los distintos 
+modelos que he puesto a jugar partidas. Te voy a adjuntar el ejemplo de una 
+partida. Ayudame a realizar en python con matplotlib funciones para visualizar 
+el porcentaje de victoria de cada modelo. 
+
+\end{itemize}
 
 \begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
+\bibitem{b1} Documentación de Pygame. \\ Disponible en: https://www.pygame.org/docs/
+\bibitem{b2} Tutorial sobre Pygame. \\ Disponible en: https://pygame.readthedocs.io/en/latest/index.html
+\bibitem{b3} Tutorial para hacer las damas en Pygame (Parte 1). Disponible en:\\ https://www.youtube.com/watch?v=vnd3RfeG3NM\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3
+\bibitem{b4} Tutorial para hacer las damas en Pygame (Parte 2). Disponible en:\\ https://www.youtube.com/watch?v=LSYj8GZMjWY\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3\&index=2
+\bibitem{b5} Tutorial para hacer las damas en Pygame (Parte 3). Disponible en:\\ https://www.youtube.com/watch?v=\_kOXGzkbnps\&list=PLzMcBGfZo4-lkJr3sqpikNyVzbNZLRiT3\&index=3
+\bibitem{b6} Tutorial para hacer el menú en Pygame. Disponible en:\\ https://www.youtube.com/watch?v=GMBqjxcKogA
+\bibitem{b7} Código del componente ``Button''. Disponible en:\\ https://github.com/baraltech/Menu-System-PyGame/blob/main/button.py
+\bibitem{b8} S. J. Russell and P. Norvig, ``Adversarial Search and Games'' in \textit{Artificial intelligence: a modern approach}, Fourth edition. Hoboken, NJ: Pearson, 2021, pp. 146-173
+\bibitem{b9} C. B. Browne, E. Powley, D. Whitehouse, S. M. Lucas, P. I. Cowling, P. Rohlfshagen, S. Tavener, D. Perez, S. Samothrakis and S. Colton: ``A survey of Monte Carlo Tree Search Methods", \textit{IEEE Transactions on Computational Intelligence and AI in Games}, vol. 4, no. 1, pp. 1-8, 2012, doi: 10.1109/TCIAIG.2012.2186810.
+\bibitem{b10} D. Silver, A. Huang, C. J. Maddison, A. Guez, L. Sifre, G. van den Driessche, J. Schrittwieser, I. Antonoglou, V. Panneershelvam, M. Lanctot, S. Dieleman, D. Grewe, J. Nham, N. Kalch-brenner, I. Sutskever, T. Lillicrap, M. Leach, K. Kavukcuoglu, T. Graepel, and D. Hassabis, “Mastering the game of Go with deep neural networks and tree search,” Nature, vol. 529, no. 7587, pp. 484–489, 2016, doi: 10.1038/nature16961.
+\bibitem{b11} https://www.researchgate.net/figure/Monte-Carlo-Tree-Search-steps-5\_fig2\_316451377
 \end{thebibliography}
-
 
 \end{document}
