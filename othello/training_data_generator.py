@@ -58,7 +58,7 @@ def last_move_formatter(player_winner, temp_file):
         next(lector)
         for line in lector:  
             if len(line) < ROWS* COLS:
-                continue              
+                continue
             moves.append((line[:-1], parse_winner(line[-1], player_winner)))
 
     with open(file, mode="a", newline="\n") as f:
