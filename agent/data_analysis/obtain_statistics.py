@@ -92,7 +92,7 @@ def plot_final_outcomes(counts):
     plt.show()
 
 if __name__ == "__main__":
-    csv_path = 'agent/training/games/AGENT_UCTvsAGENT_UCT.csv'
+    csv_path = 'agent/training/games/AGENT_UCTvsBOT.csv'
     counts = load_final_outcomes_by_full_board2(csv_path)
     print(counts)
     plot_final_outcomes(counts)
