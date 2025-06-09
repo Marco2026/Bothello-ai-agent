@@ -509,24 +509,66 @@ en concreto obtuvimos los siguientes resultados:
     \end{figure}
   \end{enumerate}
 
+  \item \textit{Red Neuronal vs Bot}:
+    \begin{enumerate}
+      \item \textit{Configuración}\\
+      Para este experimento contamos con la siguiente configuración:
+      \begin{itemize}
+        \item \textit{Player 1}: Red Neuronal
+        \item \textit{Player 2}: Bot
+        \item \textit{Valor de constante C}: $\frac{1}{\sqrt{2}}$
+      \end{itemize}
+      \item \textit{Objetivo}\\
+      Tras su primer entrenamiento, queríamos probar cómo se comportaba la red contra el Bot.
+      Esperábamos que obtuviera un resultado mejor que el Bot, ya que el Bot ejecuta una acción
+      completamente aleatoria.
+      \item \textit{Resultados}\\
+      Con una muestra de 100 partidas generadas, obtuvimos los siguientes resultados (Fig. ~\ref{fig:agentnn01vsbot}.):
+      \begin{itemize}
+        \item \textit{Victorias de Player 1}: $47$
+        \item \textit{Victorias de Player 2}: $50$
+        \item \textit{Empates}: $3$
+      \end{itemize}
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=\columnwidth]{AGENT_NN01vsBOT.png}
+        \caption{Resultados de Agente con Red Neuronal 1 contra Bot.}
+        \label{fig:agentnn01vsbot}
+      \end{figure}
+      Los resultados nos dieron a entender que la red neuronal era prácticamente igual al Bot
+      en términos de porcentaje de victoria, lo que indica la necesidad de un entrenamiento mejorado.
+    \end{enumerate}
+
 \item \textit{Red Neuronal vs Agente MCTS}:
   \begin{enumerate}
     \item \textit{Configuración}\\
     Para este experimento contamos con la siguiente configuración:
     \begin{itemize}
-      \item \textit{Player 1}: Agente MCTS
-      \item \textit{Player 2}: Red Neuronal
+      \item \textit{Player 1}: Red Neuronal
+      \item \textit{Player 2}: Agente MCTS
       \item \textit{Valor de constante C}: $\frac{1}{\sqrt{2}}$
     \end{itemize}
     \item \textit{Objetivo}\\
-    texto
+    Tras haber probado la red neuronal contra el Bot, queríamos ver cómo se comportaba
+    contra el agente, para ver si tenía más porcentaje de victoria que el Bot.
     \item \textit{Resultados}\\
-    Con una muestra de 200 partidas generadas, obtuvimos los siguientes resultados:
+    Con una muestra de 100 partidas generadas, obtuvimos los siguientes resultados (Fig. ~\ref{fig:agentnn01vsagent}.):
     \begin{itemize}
-      \item \textit{Victorias de Player 1}: 
-      \item \textit{Victorias de Player 2}: 
-      \item \textit{Empates}: 
+      \item \textit{Victorias de Player 1}: $0$
+      \item \textit{Victorias de Player 2}: $100$
+      \item \textit{Empates}: $0$
     \end{itemize}
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\columnwidth]{AGENT_NN01vsAGENT_MCTS.png}
+      \caption{Resultados de Agente con Red Neuronal 1 contra Agente MCTS.}
+      \label{fig:agentnn01vsagent}
+    \end{figure}
+    Los resultados no fueron nada positivos, lo que es una indicación clara de que debemos
+    mejorar el entrenamiento de la red para conseguir un porcentaje mayor.
+
   \end{enumerate}
 \end{enumerate}
 
@@ -544,6 +586,7 @@ Los resultados anteriormente descritos se han resumido en la tabla~\ref{tab:resu
     Agente MCTS & Bot & 200 & 0 & 0 \\
     Bot & Agente MCTS & 2 & 0 & 198 \\
     Agente MCTS & Agente MCTS & 86 & 3 & 111 \\
+    Agente NN01 & Agente MCTS & 0 & 0 & 100 \\
     \bottomrule
   \end{tabular}
 \end{table}
