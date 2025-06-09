@@ -265,7 +265,7 @@ Desarrollo del proyecto:
     permitiendo abrir el juego y mostrar el tablero, y el módulo \texttt{game\_config},
     que establece constantes básicas del juego, como las dimensiones de la pantalla o 
     el tamaño del tablero.
-  \item \textit{Habilitación para colocar piezas:} implementamos la clase \texttt{Board}
+  \item \textit{Colocación de piezas:} implementamos la clase \texttt{Board}
     y la clase \texttt{Piece}, con las funcionalidades necesarias para que los jugadores
     colocaran una ficha al hacer click en cada casilla del tablero.
   \item \textit{Aplicación de reglas de Otelo:} desarrollamos toda la lógica necesaria
@@ -294,19 +294,34 @@ Desarrollo del proyecto:
   y quién las blancas, habilitando así todas las combinaciones posibles entre tipos de jugador.
   \end{enumerate}
 
-\item \textit{Grabación de partidas a csv:} añadimos una funcionalidad para grabar las partidas
-  jugadas en un fichero csv, de modo que posteriormente se pueda utilizar para entrenar una red 
-  neuronal. Estos datos se pueden crear de manera opcional, en un archivo \texttt{.csv} que se
-  genera en la carpeta \texttt{agent/training}, y toma el nombre según el tipo de partida que se
-  grabe. Por tanto, si se juega una partida en la que un bot juega con las fichas negras y un agente con 
-  una red neuronal \textit{NN} controla las blancas, se guardará en \texttt{agent/training/games/BOTvsAGENT\_NN.csv} 
-  Posteriormente, todos estos ficheros se copiarán pasarán a otro archivo que servirá para entrenar la red.
+\item \textit{Grabación de partidas:} añadimos una funcionalidad para almacenar registros 
+  de las partidas jugadas en un fichero csv, de modo que posteriormente se pueda utilizar
+  para entrenar una red neuronal. Estos datos se pueden crear de manera opcional, en un 
+  archivo \texttt{.csv} que se genera en la carpeta \texttt{agent/training}, y toma el
+  nombre según el tipo de partida que se grabe. Por tanto, si se juega una partida en la 
+  que un bot juega con las fichas negras y un agente en modo UCT (sin red neuronal) controla
+  las blancas, se guardará en \texttt{agent/training/games/BOTvsAGENT\_UCT.csv} 
+  Posteriormente, todos estos ficheros se copiarán pasarán a otro archivo que para entrenar la red.
 
 \item \textit{Simulación de partidas:}  Para grabar datos de entrenamiento de manera automatizada,
   implementamos un sistema de generación de partidas automáticas. Con la generación de partidas,
   logramos dotar a la red neuronal de una base de datos sólida para su entrenamiento.
   
-\item \textit{Red neuronal} 
+\item \textit{Creación de la red neuronal:} Diseñamos una red neuronal capaz de predecir la probabilidad 
+  de victoria o derrota en función de la distribución del tablero. Esta red se entrena utilizando los 
+  datos generados por las partidas simuladas, lo que permite al agente aprender de las estrategias y 
+  patrones de juego.
+  \begin{enumerate}
+  \item \textit{Entrenamiento de la red:} El entrenamiento se realizó con un conjunto de datos de partidas
+  simuladas, donde por cada turno se guardaba la disposición del tablero y si el resultado en la partida del 
+  jugador protagonista en ese turno.
+  \item \textit{Separación de distintas redes:} Una vez entrenamos la red, almacenamos los resultados del entrenamiento 
+  \texttt{bothello\_first\_training.h5}, con el fin de poder reutilizarla en el futuro. Esto nos
+  permitió almacenar distintas versiones de la red y poder enfrentarlas entre sí para ver cuál es la más efectiva.
+  \item \textit{Mejora continua de la red:} A partir de la primera red, generamos nuevas partidas y las utilizamos para
+  entrenar una versión mejorada de la red. Este proceso es iterativo, y se podrá repetir tantas veces como se desee,
+  con el fin de alcanzar un modelo mejorado que maximice la probabilidad de victoria del agente.
+  \end{enumerate}
   
 \end{enumerate}
 
