@@ -91,12 +91,19 @@ de las técnicas y algoritmos vistos en clase para resolver el problema plantead
 por el profesor. El trabajo está centrado en el universo del juego de mesa ``Otelo'',
 el cual hemos modelado en el lenguaje de programación Python con ayuda de la librería
 ``Pygame''~\cite{b1}-~\cite{b2} apoyándonos en tutoriales de YouTube para realizar el código tanto
-del juego~\cite{b3}-~\cite{b5} como del menú~\cite{b6}-~\cite{b7}. Una vez realizado el
+del juego~\cite{b3}-~\cite{b5} como del menú~\cite{b6}-~\cite{b7} mostrado en (Fig. \ref{fig:menuimage}.). Una vez realizado el
 código tanto del juego como del menú, ya podíamos jugar una persona contra otra persona, pero,
 para acercarnos a nuestro objetivo de incluir agentes inteligentes, desarrollamos primero
 un bot que realizara jugadas aleatorias y a su vez desarrollamos la lógica necesaria para
 que al jugar contra el bot, la partida quedara registrada en un fichero csv con el texto
 completamente preparado con vista a entrenar una red neuronal en el futuro.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\columnwidth]{MENU_IMAGE.jpg}
+  \caption{Imagen del menú en Pygame.}
+  \label{fig:menuimage}
+\end{figure}
 
 Una vez teníamos el bot y el sistema de generación de datos, nos informamos sobre cómo
 deberíamos implementar un agente~\cite{b8} para cumplir con el objetivo de atacar un problema de
@@ -314,7 +321,8 @@ La metodología de trabajo que hemos seguido a lo largo del desarrollo del proye
   \end{enumerate}
 
 \item \textit{Creación del agente:} incorporamos un agente capaz de tomar decisiones
- estratégicas utilizando el algoritmo Monte Carlo Tree Search (MCTS).
+ estratégicas utilizando el algoritmo Monte Carlo Tree Search (MCTS) siguiendo el pseudocódigo
+ explicado en (Fig. ~\ref{pcd:uct_pseudocodigo}.) basado en el explicado en ~\cite{b9}.
   \begin{enumerate}
   \item \textit{Enfoque UCT:} se utilizó la variante Upper Confidence Bound Tree (UCT) 
   con el fin de equilibrar de manera efectiva la exploración y la explotación durante la búsqueda. 
@@ -343,6 +351,15 @@ La metodología de trabajo que hemos seguido a lo largo del desarrollo del proye
   de victoria o derrota en función de la distribución del tablero. Esta red se entrena utilizando los 
   datos generados por las partidas simuladas, lo que permite al agente aprender de las estrategias y 
   patrones de juego.
+
+  Para la creación de la red hemos utilizado un optimizador $SGD$ y una estructura con:
+  \begin{itemize}
+    \item Capa inicial: 64 neuronas (una por cada posición del tablero)
+    \item Capa intermedia: 32 neuronas y función de activación sigmoide
+    \item Capa final: 1 neurona y función de activación de tangente hiperbólica (para obtener resultado en el intervalo $[-1,1]$)
+  \end{itemize}
+
+  Como hiperparámetros, hemos utilizado:
 
   \begin{equation}
   \label{eq:tasaaprendizaje_mse}
@@ -426,7 +443,7 @@ La metodología de trabajo que hemos seguido a lo largo del desarrollo del proye
   \end{pseudo}
 
   \begin{pseudo}*
-    \hd{\fn{propagación}}() \\*
+    \hd{\fn{retropropagación}}() \\*
     \multicolumn{2}{l}{\textbf{Entrada}: un nodo hoja y una recompensa} \\
       \textnormal{mientras el} nodo no \textnormal{sea} nulo \\+
       incrementar\textnormal{ el número de }visitas \\
