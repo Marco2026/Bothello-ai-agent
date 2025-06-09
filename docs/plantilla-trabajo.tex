@@ -310,6 +310,16 @@ La metodología de trabajo que hemos seguido a lo largo del desarrollo del proye
   de victoria o derrota en función de la distribución del tablero. Esta red se entrena utilizando los 
   datos generados por las partidas simuladas, lo que permite al agente aprender de las estrategias y 
   patrones de juego.
+
+  \begin{equation}
+  \label{eq:tasaaprendizaje_mse}
+   \eta = 0,01 \qquad \text{MSE} = 1
+  \end{equation}
+  \begin{equation}
+  \label{eq:epochs_bach}
+   \text{epochs} = 800  \qquad \text{batch} = 256
+  \end{equation}
+
   \begin{enumerate}
   \item \textit{Entrenamiento de la red:} El entrenamiento se realizó con un conjunto de datos de partidas
   simuladas, donde por cada turno se guardaba la disposición del tablero y el resultado en la partida del 
@@ -325,17 +335,6 @@ La metodología de trabajo que hemos seguido a lo largo del desarrollo del proye
 \end{enumerate}
 
 
-Las figuras se deben mencionar en el texto, como la
-\figurename~\ref{fig:ejemplo}. También se pueden añadir ecuaciones, como la
-ecuación~\eqref{eq:ejemplo}.
-
-\begin{equation}
-  \label{eq:ejemplo}
-  a + b = \gamma
-\end{equation}
-
-Un ejemplo de pseudocódigo se puede observar en la
-\figurename~\ref{pcd:mergesort}.
 
 \begin{figure}
   \begin{pseudo}*
