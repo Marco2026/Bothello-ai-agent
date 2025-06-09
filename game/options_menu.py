@@ -119,7 +119,7 @@ def change_agent_mode(agent, player_name):
             new_agent = None
         else:
             new_agent = gv.NeuralNetwork((current_agent.value + 1))
-    setattr(gc, agent, new_agent)
+    setattr(gv, agent, new_agent)
     return new_agent
     
 def simulate_games (num_games = gv.SIMULATIONS):  
