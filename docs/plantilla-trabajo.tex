@@ -343,6 +343,16 @@ La metodología de trabajo que hemos seguido a lo largo del desarrollo del proye
   de victoria o derrota en función de la distribución del tablero. Esta red se entrena utilizando los 
   datos generados por las partidas simuladas, lo que permite al agente aprender de las estrategias y 
   patrones de juego.
+
+  \begin{equation}
+  \label{eq:tasaaprendizaje_mse}
+   \eta = 0,01 \qquad \text{MSE} = 1
+  \end{equation}
+  \begin{equation}
+  \label{eq:epochs_bach}
+   \text{epochs} = 800  \qquad \text{batch} = 256
+  \end{equation}
+
   \begin{enumerate}
   \item \textit{Entrenamiento de la red:} El entrenamiento se realizó con un conjunto de datos de partidas
   simuladas, donde por cada turno se guardaba la disposición del tablero y el resultado en la partida del 
@@ -358,65 +368,75 @@ La metodología de trabajo que hemos seguido a lo largo del desarrollo del proye
 \end{enumerate}
 
 
-Las figuras se deben mencionar en el texto, como la
-\figurename~\ref{fig:ejemplo}. También se pueden añadir ecuaciones, como la
-ecuación~\eqref{eq:ejemplo}.
-
-\begin{equation}
-  \label{eq:ejemplo}
-  a + b = \gamma
-\end{equation}
-
-Un ejemplo de pseudocódigo se puede observar en la
-\figurename~\ref{pcd:mergesort}.
 
 \begin{figure}
   \begin{pseudo}*
-    \hd{\fn{mergesort}}(V) \\*
-    \multicolumn{2}{l}{\textbf{Entrada}: un vector \( V \)} \\*
-    \multicolumn{2}{l}{\textbf{Salida}: un vector con los elementos de \( V \)
-      en orden} \\
-    si \( V \) \textnormal{es unitario} entonces \\+
-    devolver \( V \) \\-
-    si no entonces \\+
-    \( V_{1} \leftarrow \textnormal{primera mitad de } V\) \\
-    \( V_{2} \leftarrow \textnormal{segunda mitad de } V\) \\
-    \( V_{1} \leftarrow \pr{mergesort}(V_{1}) \) \\
-    \( V_{2} \leftarrow \pr{mergesort}(V_{2}) \) \\
-    devolver \fn{mezcla}(V_{1}, V_{2})
+    \hd{\fn{búsqueda\_UCT}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un estado inicial y (opcionalmente) una red neuronal} \\*
+    \multicolumn{2}{l}{\textbf{Salida}: una acción recomendada} \\
+    \textnormal {crear nodo} raíz\textnormal{ con el estado inicial}\\
+    \textnormal{establecer tiempo} \\ 
+    \textnormal{mientras quede tiempo} \\+
+      \textnormal{seleccionar una hoja mediante la} política \textnormal{del árbol} \\
+      si no hay red neuronal \\+
+        \textnormal{estimar recompensa simulando} aleatoriamente \\-
+      si hay red neuronal \\+
+        \textnormal{estimar recompensa mediante} la política de la red \\-
+      propagar \textnormal{la recompensa hacia la raíz} \\-
+    \textnormal{devolver la} acción \textnormal{asociada al mejor} hijo \textnormal{de la raíz}
   \end{pseudo}
-  
-  \begin{pseudo}*
-    \hd{\fn{mezcla}}(V_{1}, V_{2}) \\*
-    \multicolumn{2}{l}{%
-      \textbf{Entrada}: dos vectores \( V_{1} \) y \( V_{2} \) ordenados
-    } \\*
-    \multicolumn{2}{l}{%
-      \textbf{Salida}: un vector con los elementos de \( V_{1} \) y \( V_{2} \)
-      en orden
-    } \\
-    si \( V_{1} \) \textnormal{no tiene elementos} entonces \\+
-    devolver \( V_{2} \) \\-
-    si no si \( V_{2} \) \textnormal{no tiene elementos} entonces \\+
-    devolver \( V_{1} \) \\-
-    si no entonces \\+
-    \( x_{1} \leftarrow \textnormal{primer elemento de } V_{1} \) \\
-    \( x_{2} \leftarrow \textnormal{primer elemento de } V_{2} \) \\
-    si \( x_{1} \leq x_{2} \) entonces \\+
-    \( x \leftarrow x_{1} \) \\
-    \textnormal{quitar el primer elemento de} \( V_{1} \) \\-
-    si no entonces \\+
-    \( x \leftarrow x_{2} \) \\
-    \textnormal{quitar el primer elemento de} \( V_{2} \) \\-
-    \( V \leftarrow \fn{mezcla}(V_{1}, V_{2}) \) \\
-    \textnormal{añadir} \( x \)
-    \textnormal{como primer elemento de} \( V \) \\
-    devolver \( V \)
-  \end{pseudo}
-  \caption{Algoritmo de ordenación \texttt{MergeSort}}
-  \label{pcd:mergesort}
-\end{figure}
 
+  \begin{pseudo}*
+    \hd{\fn{política\_del\_árbol}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un nodo del árbol} \\*
+    \multicolumn{2}{l}{\textbf{Salida}: un nodo} \\
+    \textnormal{mientras el} nodo no \textnormal{sea} terminal \\+
+      \textnormal{si el nodo tiene acciones} sin explorar \\+
+        expandir \textnormal{el nodo y devolver el nuevo hijo} \\-
+      \textnormal{si todas las acciones ya han sido} exploradas \\+
+        \textnormal{avanzar al nodo hijo con mejor valor} \\-
+    \textnormal{devolver el nodo}
+  \end{pseudo}
+
+  \begin{pseudo}*
+    \hd{\fn{mejor\_hijo}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un nodo y la constante de exploración} \\*
+    \multicolumn{2}{l}{\textbf{Salida}: el hijo con mayor valor de exploración} \\
+     \textnormal{calcular el valor de cada hijo usando la fórmula} UCB \\
+     \textnormal{devolver el hijo con mayor valor}
+  \end{pseudo}
+
+  \begin{pseudo}*
+    \hd{\fn{política\_aleatoria}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un estado de juego} \\*
+    \multicolumn{2}{l}{\textbf{Salida}: una recompensa simulada} \\
+     \textnormal{mientras el} estado no  \textnormal{sea} terminal \\+
+       \textnormal{elegir una acción} aleatoria \\
+       aplicar  \textnormal{la acción al estado} \\-
+     \textnormal{calcular y devolver la recompensa final}
+  \end{pseudo}
+
+  \begin{pseudo}*
+    \hd{\fn{política\_de\_red}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un estado y una red neuronal} \\*
+    \multicolumn{2}{l}{\textbf{Salida}: una recompensa estimada} \\
+    \textnormal{copiar y parsear el estado} \\
+    \textnormal{estimar la} recompensa \textnormal{de la red} \\
+    \textnormal{devolver el valor de salida como recompensa estimada}
+  \end{pseudo}
+
+  \begin{pseudo}*
+    \hd{\fn{propagación}}() \\*
+    \multicolumn{2}{l}{\textbf{Entrada}: un nodo hoja y una recompensa} \\
+      \textnormal{mientras el} nodo no \textnormal{sea} nulo \\+
+      incrementar\textnormal{ el número de }visitas \\
+      acumular \textnormal{la }recompensa \\
+      avanzar \textnormal{al nodo padre} \\-
+  \end{pseudo}
+
+  \caption{Algoritmo de búsqueda UCT con red neuronal opcional}
+  \label{pcd:uct_pseudocodigo}
+\end{figure}
 \section{Resultados}
 
 Tras implementar el Bot, realizamos algunos experimentos para valorar la calidad del
